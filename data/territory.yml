@@ -1,0 +1,112 @@
+Territories:
+- 1:
+    name: North West Territory
+    neighbors:
+      - 42
+      - 2
+      - 3
+      - 8
+- 2:
+    name: Alberta
+    neighbors:
+      - 42
+      - 1
+      - 3
+      - 4
+- 3: 
+    name: Ontario
+    neighbors:
+      - 1
+      - 2
+      - 8
+      - 7
+      - 4
+      - 5
+- 4: 
+    name: West US
+    neighbors:
+      - 2
+      - 3
+      - 5
+      - 6
+- 5: 
+    name: East US
+    neighbors:
+      - 6
+      - 4
+      - 3
+      - 7
+- 6: 
+    name: Central America
+- 7: 
+    name: Quebec
+- 8:
+    name: Greenland
+- 9: 
+    name: Iceland
+- 10:
+    name: Great Britain
+- 11: 
+    name: North Europe
+- 12:
+    name: West Europe
+- 13:
+    name: South Europe
+- 14: 
+    name: West Europe
+- 15: 
+    name: Ukraine
+- 16:
+    name: Afghanistan
+- 17:
+    name: Ural
+- 18:
+    name: Siberia
+- 19:
+    name: Yakutsk
+- 20:
+    name: Kamchatka
+- 21:
+    name: Irkutsk
+- 22:
+    name: Mongolia
+- 23:
+    name: China
+- 24: 
+    name: Middle East
+- 25: 
+    name: India
+- 26: 
+    name: Siam
+- 27:
+    name: Japan
+- 28: 
+    name: Venezuela
+- 29:
+    name: Peru
+- 30:
+    name: Brazil
+- 31:
+    name: Argentina
+- 32:
+    name: North Africa
+- 33: 
+    name: Egypt
+- 34:
+    name: East Africa
+- 35:
+    name: Congo
+- 36:
+    name: South Africa
+- 37:
+    name: Madagascar
+- 38:
+    name: Indonesia
+- 39:
+    name: New Guinea
+- 40:
+    name: West Australia
+- 41:
+    name: East Australia
+- 42:
+    name: Alaska
