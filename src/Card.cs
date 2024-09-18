@@ -1,8 +1,8 @@
 namespace Risk {
     public enum CardType {
-        INFANTRY,
-        CAVALRY,
-        ARTILLERY,
+        Infantry,
+        Cavalry,
+        Artillery,
     }
 
     public class Card {
