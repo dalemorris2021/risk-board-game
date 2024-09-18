@@ -1,0 +1,15 @@
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/bin/Debug/net8.0/risk-board-game
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/bin/Debug/net8.0/risk-board-game.deps.json
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/bin/Debug/net8.0/risk-board-game.runtimeconfig.json
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/bin/Debug/net8.0/risk-board-game.dll
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/bin/Debug/net8.0/risk-board-game.pdb
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.GeneratedMSBuildEditorConfig.editorconfig
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.AssemblyInfoInputs.cache
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.AssemblyInfo.cs
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.csproj.CoreCompileInputs.cache
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.sourcelink.json
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.dll
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/refint/risk-board-game.dll
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.pdb
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/risk-board-game.genruntimeconfig.cache
+/home/thatdaleguy03/projects/homework/p445/risk-board-game/obj/Debug/net8.0/ref/risk-board-game.dll
