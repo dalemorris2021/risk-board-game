@@ -1,6 +1,6 @@
 ﻿namespace Risk {
     public class App {
-        public static void Main(String[] args) {
+        public static void Main(string[] args) {
             (new App()).Run();
         }
 
