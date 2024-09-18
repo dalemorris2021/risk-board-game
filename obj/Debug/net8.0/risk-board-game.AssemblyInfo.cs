@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("risk-board-game")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+84fdc17da9452ecc096b8ae1d44e535946ced608")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e22ab2b8f77be2cd2f0d9b7f6f61653e7063a47")]
 [assembly: System.Reflection.AssemblyProductAttribute("risk-board-game")]
 [assembly: System.Reflection.AssemblyTitleAttribute("risk-board-game")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
