@@ -1,15 +1,21 @@
 Territories:
+- 0:
+      name: Alaska
+      neighbors:
+        - 1
+        - 2
+        - 20
 - 1:
     name: North West Territory
     neighbors:
-      - 42
+      - 0
       - 2
       - 3
       - 8
 - 2:
     name: Alberta
     neighbors:
-      - 42
+      - 0
       - 1
       - 3
       - 4
@@ -139,7 +145,7 @@ Territories:
 - 20:
     name: Kamchatka
     neighbors:
-      - 42
+      - 0
       - 27
       - 19
       - 21
@@ -222,12 +228,12 @@ Territories:
 - 32:
     name: North Africa
     neighbors:
-        - 12
-        - 13
-        - 33
-        - 30
-        - 34
-        - 35
+      - 12
+      - 13
+      - 33
+      - 30
+      - 34
+      - 35
 - 33: 
     name: Egypt
     neighbors:
@@ -261,9 +267,9 @@ Territories:
 - 38:
     name: Indonesia
     neighbors:
-        - 26
-        - 39
-        - 40
+      - 26
+      - 39
+      - 40
 - 39:
     name: New Guinea
     neighbors:
@@ -273,17 +279,12 @@ Territories:
 - 40:
     name: West Australia
     neighbors:
-        - 38
-        - 39
-        - 41
+      - 38
+      - 39
+      - 41
 - 41:
     name: East Australia
     neighbors:
       - 39
       - 40
-- 42:
-    name: Alaska
-    neighbors:
-      - 1
-      - 2
-      - 20
+
