@@ -1,0 +1,62 @@
+---
+Continents:
+  "1":
+    name: North America
+    territories:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+  "2":
+    name: South America
+    territories:
+      - 28
+      - 29
+      - 30
+      - 31
+  "3":
+    name: Europe
+    territories:
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+  "4":
+    name: Africa
+    territories:
+      - 32
+      - 33
+      - 34
+      - 35
+      - 36
+      - 37
+  "5":
+    name: Asia
+    territories:
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+  "6":
+    name: Oceania
+    territories:
+      - 38
+      - 39
+      - 40
+      - 41
