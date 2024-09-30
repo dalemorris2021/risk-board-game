@@ -4,9 +4,9 @@ namespace Risk {
         public Player OccupyingPlayer { get; }
         public int ArmySize { get; }
 
-        public Territory(string name, Player player, int armySize) {
+        public Territory(string name, int armySize) {
             Name = name;
-            OccupyingPlayer = player;
+            OccupyingPlayer = null;
             ArmySize = armySize;
         }
     }
