@@ -2,6 +2,16 @@ using System.Drawing;
 
 namespace Risk.Tests {
     public class Territory {
+        public class PlayerData : IEnumerable<object[]> {
+            public IEnumerator<object[]> GetEnumerator() {
+                yield return new object[] { new Risk.Player("John", Color.Black) };
+                yield return new object[] { new Risk.Player("", Color.Blue) };
+                yield return new object[] { new Risk.Player("Mark Brown", Color.Red) };
+            }
+            
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         [Theory]
         [InlineData("Alaska")]
         [InlineData("Northwest Territory")]
@@ -25,21 +35,12 @@ namespace Risk.Tests {
 
         [Theory]
         [ClassData(typeof(PlayerData))]
-        public void OccupyingPlayerShouldBeAsGiven(Player occupyingPlayer) {
+        public void OccupyingPlayerShouldBeAsGiven(Risk.Player occupyingPlayer) {
             Risk.Territory t1 = new Risk.Territory("");
 
             t1.OccupyingPlayer = occupyingPlayer;
 
             Assert.Equivalent(occupyingPlayer, t1.OccupyingPlayer);
-        }
-
-        public class PlayerData : IEnumerable<object[]> {
-            public IEnumerator<object[]> GetEnumerator() {
-                yield return new object[] { new Risk.Player("John", Color.Black) };
-                yield return new object[] { new Risk.Player("", Color.Blue) };
-                yield return new object[] { new Risk.Player("Mark Brown", Color.Red) };
-            }
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
         [Fact]
