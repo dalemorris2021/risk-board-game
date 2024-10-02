@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace Risk.Tests {
     public class Continent {
         [Theory]
