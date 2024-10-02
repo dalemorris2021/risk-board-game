@@ -40,5 +40,19 @@ namespace Risk.Tests {
             }
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
+
+        [Theory]
+        [InlineData(0U)]
+        [InlineData(1U)]
+        [InlineData(5U)]
+        [InlineData(10U)]
+        [InlineData(1000U)]
+        public void ArmyBonusShouldBeAsGiven(uint armyBonus) {
+            Risk.Continent c1 = new Risk.Continent("", new HashSet<Risk.Territory>(), armyBonus);
+
+            uint bonus = c1.ArmyBonus;
+
+            Assert.Equivalent(bonus, armyBonus);
+        }
     }
 }
