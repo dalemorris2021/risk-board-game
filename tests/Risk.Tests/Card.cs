@@ -15,13 +15,13 @@ namespace Risk.Tests {
         }
 
         [Theory]
-        [InlineData(CardType.Infantry)]
-        [InlineData(CardType.Cavalry)]
-        [InlineData(CardType.Artillery)]
-        public void CardTypeShouldBeAsGiven(CardType cardType) {
+        [InlineData(Risk.CardType.Infantry)]
+        [InlineData(Risk.CardType.Cavalry)]
+        [InlineData(Risk.CardType.Artillery)]
+        public void CardTypeShouldBeAsGiven(Risk.CardType cardType) {
             Risk.Card c1 = new Risk.Card("", cardType);
 
-            CardType type = c1.CardType;
+            Risk.CardType type = c1.CardType;
 
             Assert.Equal(type, cardType);
         }

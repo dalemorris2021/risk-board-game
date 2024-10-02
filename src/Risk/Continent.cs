@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace Risk {
     public class Continent {
         public string Name { get; }
