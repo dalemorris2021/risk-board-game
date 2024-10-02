@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Drawing;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 
 namespace Risk.Tests {
     public class Territory {
