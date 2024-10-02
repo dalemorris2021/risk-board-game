@@ -1,10 +1,12 @@
+using System.Collections;
+
 namespace Risk {
     public class Continent {
         public string Name { get; }
-        public List<Territory> Territories { get; }
-        public int ArmyBonus { get; }
+        public ISet<Territory> Territories { get; }
+        public uint ArmyBonus { get; }
 
-        public Continent(string name, List<Territory> territories, int armyBonus) {
+        public Continent(string name, ISet<Territory> territories, uint armyBonus) {
             Name = name;
             Territories = territories;
             ArmyBonus = armyBonus;
