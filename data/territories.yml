@@ -1,289 +1,250 @@
 ---
-Territories:
-  - "0":
-      name: Alaska
-      neighbors:
-        - 1
-        - 2
-        - 20
-  - "1":
-      name: North West Territory
-      neighbors:
-        - 0
-        - 2
-        - 3
-        - 8
-  - "2":
-      name: Alberta
-      neighbors:
-        - 0
-        - 1
-        - 3
-        - 4
-  - "3":
-      name: Ontario
-      neighbors:
-        - 1
-        - 2
-        - 8
-        - 7
-        - 4
-        - 5
-  - "4":
-      name: West US
-      neighbors:
-        - 2
-        - 3
-        - 5
-        - 6
-  - "5":
-      name: East US
-      neighbors:
-        - 6
-        - 4
-        - 3
-        - 7
-  - "6":
-      name: Central America
-      neighbors:
-        - 4
-        - 5
-        - 28
-  - "7":
-      name: Quebec
-      neighbors:
-        - 8
-        - 5
-        - 3
-  - "8":
-      name: Greenland
-      neighbors:
-        - 1
-        - 3
-        - 7
-        - 9
-  - "9":
-      name: Iceland
-      neighbors:
-        - 8
-        - 14
-        - 10
-  - "10":
-      name: Great Britain
-      neighbors:
-        - 9
-        - 14
-        - 11
-        - 12
-  - "11":
-      name: North Europe
-      neighbors:
-        - 9
-        - 15
-        - 12
-        - 13
-        - 14
-  - "12":
-      name: West Europe
-      neighbors:
-        - 11
-        - 32
-        - 13
-        - 10
-  - "13":
-      name: South Europe
-      neighbors:
-        - 11
-        - 15
-        - 12
-        - 32
-        - 33
-  - "14":
-      name: Scandinavia
-      neighbors:
-        - 15
-        - 11
-        - 10
-        - 9
-  - "15":
-      name: Ukraine
-      neighbors:
-        - 14
-        - 11
-        - 13
-        - 16
-        - 17
-        - 24
-  - "16":
-      name: Afghanistan
-      neighbors:
-        - 15
-        - 17
-        - 23
-        - 25
-        - 24
-  - "17":
-      name: Ural
-      neighbors:
-        - 15
-        - 16
-        - 18
-        - 23
-  - "18":
-      name: Siberia
-      neighbors:
-        - 17
-        - 19
-        - 21
-        - 22
-        - 23
-  - "19":
-      name: Yakutsk
-      neighbors:
-        - 18
-        - 20
-        - 21
-  - "20":
-      name: Kamchatka
-      neighbors:
-        - 0
-        - 27
-        - 19
-        - 21
-        - 22
-  - "21":
-      name: Irkutsk
-      neighbors:
-        - 18
-        - 19
-        - 20
-        - 22
-  - "22":
-      name: Mongolia
-      neighbors:
-        - 27
-        - 21
-        - 20
-        - 18
-        - 23
-  - "23":
-      name: China
-      neighbors:
-        - 22
-        - 18
-        - 17
-        - 16
-        - 26
-        - 25
-  - "24":
-      name: Middle East
-      neighbors:
-        - 15
-        - 25
-        - 16
-        - 13
-        - 33
-  - "25":
-      name: India
-      neighbors:
-        - 26
-        - 24
-        - 23
-        - 16
-  - "26":
-      name: Siam
-      neighbors:
-        - 38
-        - 23
-        - 25
-  - "27":
-      name: Japan
-      neighbors:
-        - 22
-        - 20
-  - "28":
-      name: Venezuela
-      neighbors:
-        - 6
-        - 29
-        - 30
-  - "29":
-      name: Peru
-      neighbors:
-        - 28
-        - 30
-        - 31
-  - "30":
-      name: Brazil
-      neighbors:
-        - 28
-        - 29
-        - 31
-        - 32
-  - "31":
-      name: Argentina
-      neighbors:
-        - 29
-        - 30
-  - "32":
-      name: North Africa
-      neighbors:
-        - 12
-        - 13
-        - 33
-        - 30
-        - 34
-        - 35
-  - "33":
-      name: Egypt
-      neighbors:
-        - 32
-        - 13
-        - 24
-        - 34
-  - "34":
-      name: East Africa
-      neighbors:
-        - 32
-        - 33
-        - 35
-        - 36
-        - 37
-  - "35":
-      name: Congo
-      neighbors:
-        - 32
-        - 34
-        - 36
-  - "36":
-      name: South Africa
-      neighbors:
-        - 34
-        - 35
-  - "37":
-      name: Madagascar
-      neighbors:
-        - 34
-  - "38":
-      name: Indonesia
-      neighbors:
-        - 26
-        - 39
-        - 40
-  - "39":
-      name: New Guinea
-      neighbors:
-        - 38
-        - 40
-        - 41
-  - "40":
-      name: West Australia
-      neighbors:
-        - 38
-        - 39
-        - 41
-  - "41":
-      name: East Australia
-      neighbors:
-        - 39
-        - 40
+- name: Alaska
+- name: Northwest Territory
+- name: Alberta
+- name: Kamchatka
+- name: Ontario
+- name: Greenland
+- name: Western US
+- name: Eastern US
+- name: Quebec
+- name: Central America
+- name: Venezuela
+- name: Iceland
+- name: Great Britain
+- name: Scandinavia
+- name: Northern Europe
+- name: Western Europe
+- name: Southern Europe
+- name: Ukraine
+- name: North Africa
+- name: Egypt
+- name: Afghanistan
+- name: Ural
+- name: Middle East
+- name: China
+- name: India
+- name: Siberia
+- name: Yakutsk
+- name: Irkutsk
+- name: Mongolia
+- name: Japan
+- name: Siam
+- name: East Africa
+- name: Indonesia
+- name: Peru
+- name: Brazil
+- name: Argentina
+- name: Congo
+- name: South Africa
+- name: Madagascar
+- name: New Guinea
+- name: Western Australia
+- name: Eastern Australia
+---
+- source: &o0
+    name: Alaska
+  target: &o1
+    name: Northwest Territory
+- source: *o0
+  target: &o2
+    name: Alberta
+- source: *o0
+  target: &o23
+    name: Kamchatka
+- source: *o1
+  target: *o2
+- source: *o1
+  target: &o3
+    name: Ontario
+- source: *o1
+  target: &o5
+    name: Greenland
+- source: *o2
+  target: *o3
+- source: *o2
+  target: &o4
+    name: Western US
+- source: *o3
+  target: *o4
+- source: *o3
+  target: &o6
+    name: Eastern US
+- source: *o3
+  target: &o8
+    name: Quebec
+- source: *o3
+  target: *o5
+- source: *o4
+  target: *o6
+- source: *o4
+  target: &o7
+    name: Central America
+- source: *o6
+  target: *o7
+- source: *o6
+  target: *o8
+- source: *o7
+  target: &o30
+    name: Venezuela
+- source: *o8
+  target: *o5
+- source: *o5
+  target: &o9
+    name: Iceland
+- source: *o9
+  target: &o10
+    name: Great Britain
+- source: *o9
+  target: &o11
+    name: Scandinavia
+- source: *o10
+  target: &o12
+    name: Northern Europe
+- source: *o10
+  target: &o13
+    name: Western Europe
+- source: *o10
+  target: *o11
+- source: *o12
+  target: *o13
+- source: *o12
+  target: &o14
+    name: Southern Europe
+- source: *o12
+  target: *o11
+- source: *o12
+  target: &o15
+    name: Ukraine
+- source: *o13
+  target: *o14
+- source: *o13
+  target: &o16
+    name: North Africa
+- source: *o14
+  target: *o15
+- source: *o14
+  target: *o16
+- source: *o14
+  target: &o28
+    name: Egypt
+- source: *o11
+  target: *o15
+- source: *o15
+  target: &o17
+    name: Afghanistan
+- source: *o15
+  target: &o18
+    name: Ural
+- source: *o15
+  target: &o19
+    name: Middle East
+- source: *o17
+  target: *o18
+- source: *o17
+  target: &o20
+    name: China
+- source: *o17
+  target: *o19
+- source: *o17
+  target: &o27
+    name: India
+- source: *o18
+  target: &o21
+    name: Siberia
+- source: *o18
+  target: *o20
+- source: *o21
+  target: &o22
+    name: Yakutsk
+- source: *o21
+  target: &o24
+    name: Irkutsk
+- source: *o21
+  target: &o25
+    name: Mongolia
+- source: *o21
+  target: *o20
+- source: *o22
+  target: *o23
+- source: *o22
+  target: *o24
+- source: *o23
+  target: *o24
+- source: *o23
+  target: *o25
+- source: *o23
+  target: &o26
+    name: Japan
+- source: *o24
+  target: *o25
+- source: *o25
+  target: *o20
+- source: *o25
+  target: *o26
+- source: *o20
+  target: *o27
+- source: *o20
+  target: &o29
+    name: Siam
+- source: *o19
+  target: *o27
+- source: *o19
+  target: *o28
+- source: *o19
+  target: &o34
+    name: East Africa
+- source: *o27
+  target: *o29
+- source: *o29
+  target: &o38
+    name: Indonesia
+- source: *o30
+  target: &o31
+    name: Peru
+- source: *o30
+  target: &o32
+    name: Brazil
+- source: *o31
+  target: *o32
+- source: *o31
+  target: &o33
+    name: Argentina
+- source: *o32
+  target: *o33
+- source: *o32
+  target: *o16
+- source: *o16
+  target: *o28
+- source: *o16
+  target: *o34
+- source: *o16
+  target: &o35
+    name: Congo
+- source: *o28
+  target: *o34
+- source: *o34
+  target: *o35
+- source: *o34
+  target: &o36
+    name: South Africa
+- source: *o34
+  target: &o37
+    name: Madagascar
+- source: *o35
+  target: *o36
+- source: *o36
+  target: *o37
+- source: *o38
+  target: &o39
+    name: New Guinea
+- source: *o38
+  target: &o40
+    name: Western Australia
+- source: *o39
+  target: *o40
+- source: *o39
+  target: &o41
+    name: Eastern Australia
+- source: *o40
+  target: *o41
