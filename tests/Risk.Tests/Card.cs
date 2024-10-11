@@ -1,29 +1,29 @@
-namespace Risk.Tests {
-    public class Card {
-        [Theory]
-        [InlineData("Alaska")]
-        [InlineData("Northwest Territory")]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("\\")]
-        public void NameShouldBeAsGiven(string territoryName) {
-            Risk.Card c1 = new Risk.Card(territoryName, Risk.CardType.Infantry);
+namespace Risk.Tests;
 
-            string name = c1.TerritoryName;
+public class Card {
+    [Theory]
+    [InlineData("Alaska")]
+    [InlineData("Northwest Territory")]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData("\\")]
+    public void NameShouldBeAsGiven(string territoryName) {
+        Risk.Card c1 = new Risk.Card(territoryName, Risk.CardType.Infantry);
 
-            Assert.Equal(name, territoryName);
-        }
+        string name = c1.TerritoryName;
 
-        [Theory]
-        [InlineData(Risk.CardType.Infantry)]
-        [InlineData(Risk.CardType.Cavalry)]
-        [InlineData(Risk.CardType.Artillery)]
-        public void CardTypeShouldBeAsGiven(Risk.CardType cardType) {
-            Risk.Card c1 = new Risk.Card("", cardType);
+        Assert.Equal(name, territoryName);
+    }
 
-            Risk.CardType type = c1.CardType;
+    [Theory]
+    [InlineData(Risk.CardType.Infantry)]
+    [InlineData(Risk.CardType.Cavalry)]
+    [InlineData(Risk.CardType.Artillery)]
+    public void CardTypeShouldBeAsGiven(Risk.CardType cardType) {
+        Risk.Card c1 = new Risk.Card("", cardType);
 
-            Assert.Equal(type, cardType);
-        }
+        Risk.CardType type = c1.CardType;
+
+        Assert.Equal(type, cardType);
     }
 }
