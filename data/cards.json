@@ -1,0 +1,170 @@
+[
+  {
+    "Name": "Alaska",
+    "Type": 0
+  },
+  {
+    "Name": "Northwest Territory",
+    "Type": 1
+  },
+  {
+    "Name": "Alberta",
+    "Type": 2
+  },
+  {
+    "Name": "Ontario",
+    "Type": 0
+  },
+  {
+    "Name": "Western US",
+    "Type": 1
+  },
+  {
+    "Name": "Eastern US",
+    "Type": 2
+  },
+  {
+    "Name": "Central America",
+    "Type": 0
+  },
+  {
+    "Name": "Quebec",
+    "Type": 1
+  },
+  {
+    "Name": "Greenland",
+    "Type": 2
+  },
+  {
+    "Name": "Iceland",
+    "Type": 0
+  },
+  {
+    "Name": "Great Britain",
+    "Type": 1
+  },
+  {
+    "Name": "Northern Europe",
+    "Type": 2
+  },
+  {
+    "Name": "Western Europe",
+    "Type": 0
+  },
+  {
+    "Name": "Southern Europe",
+    "Type": 1
+  },
+  {
+    "Name": "Scandinavia",
+    "Type": 2
+  },
+  {
+    "Name": "Ukraine",
+    "Type": 0
+  },
+  {
+    "Name": "Afghanistan",
+    "Type": 1
+  },
+  {
+    "Name": "Ural",
+    "Type": 2
+  },
+  {
+    "Name": "Siberia",
+    "Type": 0
+  },
+  {
+    "Name": "Yakutsk",
+    "Type": 1
+  },
+  {
+    "Name": "Kamchatka",
+    "Type": 2
+  },
+  {
+    "Name": "Irkutsk",
+    "Type": 0
+  },
+  {
+    "Name": "Mongolia",
+    "Type": 1
+  },
+  {
+    "Name": "China",
+    "Type": 2
+  },
+  {
+    "Name": "Middle East",
+    "Type": 0
+  },
+  {
+    "Name": "India",
+    "Type": 1
+  },
+  {
+    "Name": "Siam",
+    "Type": 2
+  },
+  {
+    "Name": "Japan",
+    "Type": 0
+  },
+  {
+    "Name": "Venezuela",
+    "Type": 1
+  },
+  {
+    "Name": "Peru",
+    "Type": 2
+  },
+  {
+    "Name": "Brazil",
+    "Type": 0
+  },
+  {
+    "Name": "Argentina",
+    "Type": 1
+  },
+  {
+    "Name": "North Africa",
+    "Type": 2
+  },
+  {
+    "Name": "Egypt",
+    "Type": 0
+  },
+  {
+    "Name": "East Africa",
+    "Type": 1
+  },
+  {
+    "Name": "Congo",
+    "Type": 2
+  },
+  {
+    "Name": "South Africa",
+    "Type": 0
+  },
+  {
+    "Name": "Madagascar",
+    "Type": 1
+  },
+  {
+    "Name": "Indonesia",
+    "Type": 2
+  },
+  {
+    "Name": "New Guinea",
+    "Type": 0
+  },
+  {
+    "Name": "Western Australia",
+    "Type": 1
+  },
+  {
+    "Name": "Eastern Australia",
+    "Type": 2
+  }
+]
