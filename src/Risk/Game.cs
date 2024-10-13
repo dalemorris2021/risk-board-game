@@ -1,40 +1,36 @@
 namespace Risk;
 
-using QuikGraph;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 public class Game {
     public void Run() {
-        UndirectedGraph<Territory, SEdge<Territory>> terrs = loadTerritories("data/territories.yml");
+        var territories = PopulateTerritories();
 
         ISerializer serializer = new SerializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
-        string yaml = "---\n"
-                + serializer.Serialize(terrs.Vertices)
-                + "---\n"
-                + serializer.Serialize(terrs.Edges);
+        string yaml = serializer.Serialize(territories);
 
-        Console.WriteLine(yaml);
+        using (StreamWriter streamWriter = new StreamWriter("data/test.yml")) {
+            streamWriter.WriteLine(yaml);
+        }
+        // Console.WriteLine(yaml);
     }
 
-    private static UndirectedGraph<Territory, SEdge<Territory>> loadTerritories(string path) {
+    private static Dictionary<Territory, List<Territory>> LoadTerritories(string path) {
         string contents = File.ReadAllText(path);
-        string[] sections = contents.Split("---").Skip(1).ToArray();
         
         IDeserializer deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
         
-        var territories = (List<Territory>) deserializer.Deserialize(sections[0]);
-        var neighbors = (SEdge<Territory>[]) deserializer.Deserialize(sections[1]);
-        var territoriesGraph = neighbors.ToUndirectedGraph<Territory, SEdge<Territory>>();
+        var territoriesDict = (Dictionary<Territory, List<Territory>>) deserializer.Deserialize(contents);
 
-        return territoriesGraph;
+        return territoriesDict;
     }
 
-    private static UndirectedGraph<Territory, SEdge<Territory>> populateTerritories() {
+    private static Dictionary<Territory, List<Territory>> PopulateTerritories() {
         var alaska = new Territory("Alaska");
         var northwestTerritory = new Territory("Northwest Territory");
         var alberta = new Territory("Alberta");
@@ -78,92 +74,15 @@ public class Game {
         var westernAustralia = new Territory("Western Australia");
         var easternAustralia = new Territory("Eastern Australia");
 
-        var neighbors = new SEdge<Territory>[] {
-            new SEdge<Territory>(alaska, northwestTerritory),
-            new SEdge<Territory>(alaska, alberta),
-            new SEdge<Territory>(alaska, kamchatka),
-            new SEdge<Territory>(northwestTerritory, alberta),
-            new SEdge<Territory>(northwestTerritory, ontario),
-            new SEdge<Territory>(northwestTerritory, greenland),
-            new SEdge<Territory>(alberta, ontario),
-            new SEdge<Territory>(alberta, westernUS),
-            new SEdge<Territory>(ontario, westernUS),
-            new SEdge<Territory>(ontario, easternUS),
-            new SEdge<Territory>(ontario, quebec),
-            new SEdge<Territory>(ontario, greenland),
-            new SEdge<Territory>(westernUS, easternUS),
-            new SEdge<Territory>(westernUS, centralAmerica),
-            new SEdge<Territory>(easternUS, centralAmerica),
-            new SEdge<Territory>(easternUS, quebec),
-            new SEdge<Territory>(centralAmerica, venezuela),
-            new SEdge<Territory>(quebec, greenland),
-            new SEdge<Territory>(greenland, iceland),
-            new SEdge<Territory>(iceland, greatBritain),
-            new SEdge<Territory>(iceland, scandinavia),
-            new SEdge<Territory>(greatBritain, northernEurope),
-            new SEdge<Territory>(greatBritain, westernEurope),
-            new SEdge<Territory>(greatBritain, scandinavia),
-            new SEdge<Territory>(northernEurope, westernEurope),
-            new SEdge<Territory>(northernEurope, southernEurope),
-            new SEdge<Territory>(northernEurope, scandinavia),
-            new SEdge<Territory>(northernEurope, ukraine),
-            new SEdge<Territory>(westernEurope, southernEurope),
-            new SEdge<Territory>(westernEurope, northAfrica),
-            new SEdge<Territory>(southernEurope, ukraine),
-            new SEdge<Territory>(southernEurope, northAfrica),
-            new SEdge<Territory>(southernEurope, egypt),
-            new SEdge<Territory>(scandinavia, ukraine),
-            new SEdge<Territory>(ukraine, afghanistan),
-            new SEdge<Territory>(ukraine, ural),
-            new SEdge<Territory>(ukraine, middleEast),
-            new SEdge<Territory>(afghanistan, ural),
-            new SEdge<Territory>(afghanistan, china),
-            new SEdge<Territory>(afghanistan, middleEast),
-            new SEdge<Territory>(afghanistan, india),
-            new SEdge<Territory>(ural, siberia),
-            new SEdge<Territory>(ural, china),
-            new SEdge<Territory>(siberia, yakutsk),
-            new SEdge<Territory>(siberia, irkutsk),
-            new SEdge<Territory>(siberia, mongolia),
-            new SEdge<Territory>(siberia, china),
-            new SEdge<Territory>(yakutsk, kamchatka),
-            new SEdge<Territory>(yakutsk, irkutsk),
-            new SEdge<Territory>(kamchatka, irkutsk),
-            new SEdge<Territory>(kamchatka, mongolia),
-            new SEdge<Territory>(kamchatka, japan),
-            new SEdge<Territory>(irkutsk, mongolia),
-            new SEdge<Territory>(mongolia, china),
-            new SEdge<Territory>(mongolia, japan),
-            new SEdge<Territory>(china, india),
-            new SEdge<Territory>(china, siam),
-            new SEdge<Territory>(middleEast, india),
-            new SEdge<Territory>(middleEast, egypt),
-            new SEdge<Territory>(middleEast, eastAfrica),
-            new SEdge<Territory>(india, siam),
-            new SEdge<Territory>(siam, indonesia),
-            new SEdge<Territory>(venezuela, peru),
-            new SEdge<Territory>(venezuela, brazil),
-            new SEdge<Territory>(peru, brazil),
-            new SEdge<Territory>(peru, argentina),
-            new SEdge<Territory>(brazil, argentina),
-            new SEdge<Territory>(brazil, northAfrica),
-            new SEdge<Territory>(northAfrica, egypt),
-            new SEdge<Territory>(northAfrica, eastAfrica),
-            new SEdge<Territory>(northAfrica, congo),
-            new SEdge<Territory>(egypt, eastAfrica),
-            new SEdge<Territory>(eastAfrica, congo),
-            new SEdge<Territory>(eastAfrica, southAfrica),
-            new SEdge<Territory>(eastAfrica, madagascar),
-            new SEdge<Territory>(congo, southAfrica),
-            new SEdge<Territory>(southAfrica, madagascar),
-            new SEdge<Territory>(indonesia, newGuinea),
-            new SEdge<Territory>(indonesia, westernAustralia),
-            new SEdge<Territory>(newGuinea, westernAustralia),
-            new SEdge<Territory>(newGuinea, easternAustralia),
-            new SEdge<Territory>(westernAustralia, easternAustralia),
+        var territoriesDict = new Dictionary<Territory, List<Territory>> {
+            // { alaska, [northwestTerritory, alberta, kamchatka] },
+            // { northwestTerritory, [alaska, alberta, ontario] },
+            { indonesia, [newGuinea, westernAustralia] },
+            { newGuinea, [indonesia, westernAustralia, easternAustralia] },
+            { westernAustralia, [indonesia, newGuinea, easternAustralia] },
+            { easternAustralia, [newGuinea, westernAustralia] },
         };
 
-        var territories = neighbors.ToUndirectedGraph<Territory, SEdge<Territory>>(false);
-        return territories;
+        return territoriesDict;
     }
 }
