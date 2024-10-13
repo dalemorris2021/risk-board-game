@@ -1,88 +1,102 @@
 namespace Risk;
 
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
+using System.Text.Json;
 
 public class Game {
     public void Run() {
-        var territories = PopulateTerritories();
+        var terrs = LoadTerritories("data/test.json");
+        if (terrs == null) {
+            Console.Error.WriteLine("Could not load data");
+            return;
+        }
 
-        ISerializer serializer = new SerializerBuilder()
+        /*ISerializer serializer = new SerializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
-        string yaml = serializer.Serialize(territories);
+        string data = serializer.Serialize(terrs);*/
 
-        using (StreamWriter streamWriter = new StreamWriter("data/test.yml")) {
-            streamWriter.WriteLine(yaml);
-        }
-        // Console.WriteLine(yaml);
+        var options = new JsonSerializerOptions {
+            WriteIndented = true,
+            Converters = { new TerritoryJsonConverter() },
+        };
+        string data = JsonSerializer.Serialize(terrs, options);
+
+        /*using (StreamWriter streamWriter = new StreamWriter("data/test.json")) {
+            streamWriter.WriteLine(data);
+        }*/
+        Console.WriteLine(data);
     }
 
-    private static Dictionary<Territory, List<Territory>> LoadTerritories(string path) {
+    private static Dictionary<Territory, List<Territory>>? LoadTerritories(string path) {
         string contents = File.ReadAllText(path);
         
-        IDeserializer deserializer = new DeserializerBuilder()
+        /*IDeserializer deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
         
-        var territoriesDict = (Dictionary<Territory, List<Territory>>) deserializer.Deserialize(contents);
+        var terrsDict = (Dictionary<string, List<Territory>>?) deserializer.Deserialize(contents);*/
+        var options = new JsonSerializerOptions {
+            Converters = { new TerritoryJsonConverter() }
+        };
+        var terrsDict = JsonSerializer.Deserialize<Dictionary<Territory, List<Territory>>>(contents, options);
 
-        return territoriesDict;
+        return terrsDict;
     }
 
     private static Dictionary<Territory, List<Territory>> PopulateTerritories() {
-        var alaska = new Territory("Alaska");
-        var northwestTerritory = new Territory("Northwest Territory");
-        var alberta = new Territory("Alberta");
-        var ontario = new Territory("Ontario");
-        var westernUS = new Territory("Western US");
-        var easternUS = new Territory("Eastern US");
-        var centralAmerica = new Territory("Central America");
-        var quebec = new Territory("Quebec");
-        var greenland = new Territory("Greenland");
-        var iceland = new Territory("Iceland");
-        var greatBritain = new Territory("Great Britain");
-        var northernEurope = new Territory("Northern Europe");
-        var westernEurope = new Territory("Western Europe");
-        var southernEurope = new Territory("Southern Europe");
-        var scandinavia = new Territory("Scandinavia");
-        var ukraine = new Territory("Ukraine");
-        var afghanistan = new Territory("Afghanistan");
-        var ural = new Territory("Ural");
-        var siberia = new Territory("Siberia");
-        var yakutsk = new Territory("Yakutsk");
-        var kamchatka = new Territory("Kamchatka");
-        var irkutsk = new Territory("Irkutsk");
-        var mongolia = new Territory("Mongolia");
-        var china = new Territory("China");
-        var middleEast = new Territory("Middle East");
-        var india = new Territory("India");
-        var siam = new Territory("Siam");
-        var japan = new Territory("Japan");
-        var venezuela = new Territory("Venezuela");
-        var peru = new Territory("Peru");
-        var brazil = new Territory("Brazil");
-        var argentina = new Territory("Argentina");
-        var northAfrica = new Territory("North Africa");
-        var egypt = new Territory("Egypt");
-        var eastAfrica = new Territory("East Africa");
-        var congo = new Territory("Congo");
-        var southAfrica = new Territory("South Africa");
-        var madagascar = new Territory("Madagascar");
-        var indonesia = new Territory("Indonesia");
-        var newGuinea = new Territory("New Guinea");
-        var westernAustralia = new Territory("Western Australia");
-        var easternAustralia = new Territory("Eastern Australia");
+        Territory alaska = new("Alaska");
+        Territory northwestTerritory = new("Northwest Territory");
+        Territory alberta = new("Alberta");
+        Territory ontario = new("Ontario");
+        Territory westernUS = new("Western US");
+        Territory easternUS = new("Eastern US");
+        Territory centralAmerica = new("Central America");
+        Territory quebec = new("Quebec");
+        Territory greenland = new("Greenland");
+        Territory iceland = new("Iceland");
+        Territory greatBritain = new("Great Britain");
+        Territory northernEurope = new("Northern Europe");
+        Territory westernEurope = new("Western Europe");
+        Territory southernEurope = new("Southern Europe");
+        Territory scandinavia = new("Scandinavia");
+        Territory ukraine = new("Ukraine");
+        Territory afghanistan = new("Afghanistan");
+        Territory ural = new("Ural");
+        Territory siberia = new("Siberia");
+        Territory yakutsk = new("Yakutsk");
+        Territory kamchatka = new("Kamchatka");
+        Territory irkutsk = new("Irkutsk");
+        Territory mongolia = new("Mongolia");
+        Territory china = new("China");
+        Territory middleEast = new("Middle East");
+        Territory india = new("India");
+        Territory siam = new("Siam");
+        Territory japan = new("Japan");
+        Territory venezuela = new("Venezuela");
+        Territory peru = new("Peru");
+        Territory brazil = new("Brazil");
+        Territory argentina = new("Argentina");
+        Territory northAfrica = new("North Africa");
+        Territory egypt = new("Egypt");
+        Territory eastAfrica = new("East Africa");
+        Territory congo = new("Congo");
+        Territory southAfrica = new("South Africa");
+        Territory madagascar = new("Madagascar");
+        Territory indonesia = new("Indonesia");
+        Territory newGuinea = new("New Guinea");
+        Territory westernAustralia = new("Western Australia");
+        Territory easternAustralia = new("Eastern Australia");
 
-        var territoriesDict = new Dictionary<Territory, List<Territory>> {
-            // { alaska, [northwestTerritory, alberta, kamchatka] },
-            // { northwestTerritory, [alaska, alberta, ontario] },
+        var terrsDict = new Dictionary<Territory, List<Territory>> {
+            { alaska, [northwestTerritory, alberta, kamchatka] },
+            { northwestTerritory, [alaska, alberta, ontario] },
+            { alberta, [alaska, northwestTerritory, ontario, westernUS] },
             { indonesia, [newGuinea, westernAustralia] },
             { newGuinea, [indonesia, westernAustralia, easternAustralia] },
             { westernAustralia, [indonesia, newGuinea, easternAustralia] },
             { easternAustralia, [newGuinea, westernAustralia] },
         };
 
-        return territoriesDict;
+        return terrsDict;
     }
 }
