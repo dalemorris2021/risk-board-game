@@ -37,6 +37,10 @@ public class Game {
         Console.WriteLine(cardsData);
     }
 
+    private static bool HasNeighbor(Territory t1, Territory t2, IDictionary<Territory, ICollection<Territory>> terrs) {
+        return terrs[t1].Contains(t2);
+    }
+
     private static IDictionary<Territory, ICollection<Territory>>? LoadTerritories(string path) {
         string contents = File.ReadAllText(path);
 
