@@ -1,23 +1,26 @@
 namespace Risk;
 
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 public class Game {
     public void Run() {
-        var terrs = LoadTerritories("data/territories.json");
+        IDictionary<Territory, ICollection<Territory>>? terrs = LoadTerritories("data/territories.json");
         if (terrs == null) {
             Console.Error.WriteLine("Could not load territories");
+            return;
         }
 
-        var conts = LoadContinents("data/continents.json");
+        ICollection<Continent>? conts = LoadContinents("data/continents.json");
         if (conts == null) {
             Console.Error.WriteLine("Could not load continents");
             return;
         }
 
-        var cards = LoadCards("data/cards.json");
+        ICollection<Card>? cards = LoadCards("data/cards.json");
         if (cards == null) {
             Console.Error.WriteLine("Could not load cards");
+            return;
         }
 
         var options = new JsonSerializerOptions {
@@ -34,13 +37,13 @@ public class Game {
         Console.WriteLine(cardsData);
     }
 
-    private static IDictionary<Territory, IList<Territory>>? LoadTerritories(string path) {
+    private static IDictionary<Territory, ICollection<Territory>>? LoadTerritories(string path) {
         string contents = File.ReadAllText(path);
 
         var options = new JsonSerializerOptions {
             Converters = { new TerritoryJsonConverter() }
         };
-        var terrs = JsonSerializer.Deserialize<IDictionary<Territory, IList<Territory>>>(contents, options);
+        var terrs = JsonSerializer.Deserialize<IDictionary<Territory, ICollection<Territory>>>(contents, options);
 
         return terrs;
     }
