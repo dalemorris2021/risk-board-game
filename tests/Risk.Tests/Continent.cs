@@ -26,7 +26,7 @@ public class Continent {
     [InlineData(" ")]
     [InlineData("\\")]
     public void NameShouldBeAsGiven(string name) {
-        Risk.Continent c1 = new Risk.Continent(name, new HashSet<Risk.Territory>(), 0);
+        Risk.Continent c1 = new Risk.Continent(name, 0, new HashSet<Risk.Territory>());
 
         string s = c1.Name;
 
@@ -36,7 +36,7 @@ public class Continent {
     [Theory]
     [ClassData(typeof(TerritoriesData))]
     public void TerritoriesShouldBeAsGiven(ISet<Risk.Territory> territories) {
-        Risk.Continent c1 = new Risk.Continent("", territories, 0);
+        Risk.Continent c1 = new Risk.Continent("", 0, territories);
 
         HashSet<Risk.Territory> terrs = (HashSet<Risk.Territory>) c1.Territories;
 
@@ -50,7 +50,7 @@ public class Continent {
     [InlineData(10U)]
     [InlineData(1000U)]
     public void ArmyBonusShouldBeAsGiven(uint armyBonus) {
-        Risk.Continent c1 = new Risk.Continent("", new HashSet<Risk.Territory>(), armyBonus);
+        Risk.Continent c1 = new Risk.Continent("", armyBonus, new HashSet<Risk.Territory>());
 
         uint bonus = c1.ArmyBonus;
 

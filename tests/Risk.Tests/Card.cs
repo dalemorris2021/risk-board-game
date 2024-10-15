@@ -10,7 +10,7 @@ public class Card {
     public void NameShouldBeAsGiven(string territoryName) {
         Risk.Card c1 = new Risk.Card(territoryName, Risk.CardType.Infantry);
 
-        string name = c1.TerritoryName;
+        string name = c1.Name;
 
         Assert.Equal(name, territoryName);
     }
@@ -22,7 +22,7 @@ public class Card {
     public void CardTypeShouldBeAsGiven(Risk.CardType cardType) {
         Risk.Card c1 = new Risk.Card("", cardType);
 
-        Risk.CardType type = c1.CardType;
+        Risk.CardType type = c1.Type;
 
         Assert.Equal(type, cardType);
     }
