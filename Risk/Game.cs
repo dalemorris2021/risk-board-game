@@ -1,6 +1,5 @@
 namespace Risk;
 
-using System.Collections.Concurrent;
 using System.Text.Json;
 
 public class Game {
@@ -37,6 +36,18 @@ public class Game {
         Console.WriteLine(cardsData);
     }
 
+    /**
+     * <summary>
+     * Checks if <code>t1</code> has <code>t2</code> as a neighbor in <code>terrs</code>
+     * </summary>
+     * <param name="t1">the primary territory</param>
+     * <param name="t2">the neighboring territory</param>
+     * <param name="terrs">a dictionary defining territory-neighbor pairs</param>
+     * <returns>
+     * <code>true</code> if the value of <code>t1</code> in <code>terrs</code>
+     * contains <code>t2</code>, false otherwise
+     * </returns>
+     */
     private static bool HasNeighbor(Territory t1, Territory t2, IDictionary<Territory, ICollection<Territory>> terrs) {
         return terrs[t1].Contains(t2);
     }
