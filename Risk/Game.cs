@@ -1,9 +1,61 @@
 namespace Risk;
 
+using System.Drawing;
 using System.Text.Json;
 
 public class Game {
     public void Run() {
+        Console.WriteLine("Welcome to Risk!");
+
+        const string END_OF_INPUT_MESSAGE = "Reached end of input";
+        const string UNKNOWN_ERROR_MESSAGE = "An unknown error has occurred";
+        const string ENTER_NUM_PLAYERS_MESSAGE = "Please enter a number between 3 and 6.";
+
+        Console.WriteLine("How many players are there?");
+        int numPlayers;
+        while (true) {
+            string? input = Console.ReadLine();
+            if (input == null) {
+                Console.WriteLine(END_OF_INPUT_MESSAGE);
+                return;
+            } else if (Int32.TryParse(input, out numPlayers)) {
+                if (numPlayers == 2) {
+                    Console.WriteLine("2-player mode has not yet been implemented.");
+                    Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
+                } else if (numPlayers < 2 || numPlayers > 6) {
+                    Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
+                } else {
+                    break;
+                }
+            } else {
+                Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
+            }
+        }
+
+        IList<Player> players = [];
+        IList<Color> playerColors = [Color.Red, Color.Blue, Color.Green, Color.Purple, Color.Yellow, Color.Orange];
+        for (int i = 0; i < numPlayers; i++) {
+            Console.WriteLine("Enter the name of player %d.", i + 1);
+            string? name = Console.ReadLine();
+            if (name == null) {
+                Console.WriteLine(END_OF_INPUT_MESSAGE);
+                return;
+            }
+            players.Add(new Player(name, playerColors[i]));
+        }
+
+        foreach (Player player in players) {
+            switch (numPlayers) {
+            case 3: player.NumArmies = 35; break;
+            case 4: player.NumArmies = 30; break;
+            case 5: player.NumArmies = 25; break;
+            case 6: player.NumArmies = 20; break;
+            default: Console.Error.WriteLine(UNKNOWN_ERROR_MESSAGE); return;
+            }
+        }
+
+        Console.WriteLine("Each player will start with %d armies.", players[0].NumArmies);
+
         IDictionary<Territory, ICollection<Territory>>? terrs = LoadTerritories("data/territories.json");
         if (terrs == null) {
             Console.Error.WriteLine("Could not load territories");
@@ -21,19 +73,6 @@ public class Game {
             Console.Error.WriteLine("Could not load cards");
             return;
         }
-
-        var options = new JsonSerializerOptions {
-            WriteIndented = true,
-            Converters = { new TerritoryJsonConverter() },
-        };
-
-        string terrsData = JsonSerializer.Serialize(terrs, options);
-        string contsData = JsonSerializer.Serialize(conts, options);
-        string cardsData = JsonSerializer.Serialize(cards, options);
-
-        Console.WriteLine(terrsData);
-        Console.WriteLine(contsData);
-        Console.WriteLine(cardsData);
     }
 
     /**
