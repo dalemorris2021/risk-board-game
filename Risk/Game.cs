@@ -75,29 +75,10 @@ public class Game {
         }
     }
 
-    /**
-     * <summary>
-     * Checks if <code>t1</code> has <code>t2</code> as a neighbor in <code>terrs</code>
-     * </summary>
-     * <param name="t1">the primary territory</param>
-     * <param name="t2">the neighboring territory</param>
-     * <param name="terrs">a dictionary defining territory-neighbor pairs</param>
-     * <returns>
-     * <code>true</code> if the value of <code>t1</code> in <code>terrs</code>
-     * contains <code>t2</code>, false otherwise
-     * </returns>
-     */
-    private static bool HasNeighbor(Territory t1, Territory t2, IDictionary<Territory, ICollection<Territory>> terrs) {
-        return terrs[t1].Contains(t2);
-    }
-
     private static IDictionary<Territory, ICollection<Territory>>? LoadTerritories(string path) {
         string contents = File.ReadAllText(path);
 
-        var options = new JsonSerializerOptions {
-            Converters = { new TerritoryJsonConverter() }
-        };
-        var terrs = JsonSerializer.Deserialize<IDictionary<Territory, ICollection<Territory>>>(contents, options);
+        var terrs = JsonSerializer.Deserialize<IDictionary<Territory, ICollection<Territory>>>(contents);
 
         return terrs;
     }
@@ -116,5 +97,21 @@ public class Game {
         var cards = JsonSerializer.Deserialize<ICollection<Card>>(contents);
 
         return cards;
+    }
+
+    /**
+     * <summary>
+     * Checks if <code>t1</code> has <code>t2</code> as a neighbor in <code>terrs</code>
+     * </summary>
+     * <param name="t1">the primary territory</param>
+     * <param name="t2">the neighboring territory</param>
+     * <param name="terrs">a dictionary defining territory-neighbor pairs</param>
+     * <returns>
+     * <code>true</code> if the value of <code>t1</code> in <code>terrs</code>
+     * contains <code>t2</code>, false otherwise
+     * </returns>
+     */
+    private static bool HasNeighbor(Territory t1, Territory t2, IDictionary<Territory, ICollection<Territory>> terrs) {
+        return terrs[t1].Contains(t2);
     }
 }

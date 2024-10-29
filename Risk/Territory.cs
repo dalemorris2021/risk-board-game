@@ -1,33 +1,25 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Drawing;
 
 namespace Risk;
 
-public record Territory(string Name);
+public class Territory {
+    string Name { get; set; }
+    string Continent { get; set; }
+    int NumArmies { get; set; }
+    ICollection<string> NeighborNames { get; set; }
+    Player? OccupyingPlayer { get; set; }
+    int[] Coordinates { get; set; }
+    Color Color { get; set; }
+    int TerrNum { get; set; }
 
-public sealed class TerritoryJsonConverter : JsonConverter<Territory> {
-    public override Territory Read(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options) =>
-        new Territory(reader.GetString());
-
-    public override void Write(
-            Utf8JsonWriter writer,
-            Territory territory,
-            JsonSerializerOptions options) =>
-        writer.WriteStringValue(territory.Name);
-
-    public override Territory ReadAsPropertyName(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options) =>
-        Read(ref reader, typeToConvert, options);
-
-    public override void WriteAsPropertyName(
-            Utf8JsonWriter writer,
-            [DisallowNull] Territory territory,
-            JsonSerializerOptions options) =>
-        writer.WritePropertyName(territory.Name);
+    public Territory(string name, string continent, ICollection<string> neighborNames) {
+        Name = name;
+        Continent = continent;
+        NumArmies = 0;
+        NeighborNames = neighborNames;
+        OccupyingPlayer = null;
+        Coordinates = [0, 0];
+        Color = Color.Black;
+        TerrNum = 0;
+    }
 }
