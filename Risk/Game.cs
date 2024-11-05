@@ -7,6 +7,13 @@ public class Game {
     const string ENTER_NUM_PLAYERS_MESSAGE = "Please enter a number between 3 and 6.";
     const string END_OF_INPUT_MESSAGE = "Reached end of input";
     const string UNKNOWN_ERROR_MESSAGE = "An unknown error has occurred";
+    TextInfo TextInfo;
+    Random Random;
+
+    public Game() {
+        TextInfo = new CultureInfo("en-US", false).TextInfo;
+        Random = new Random();
+    }
 
     public void Run() {
         Console.WriteLine("Welcome to Risk!");
@@ -42,9 +49,18 @@ public class Game {
         ClaimTerritories(players, territoriesDict);
 
         PlaceInitialArmies(players, territoriesDict);
+
+        while (true) {
+            bool playerWins = IsWinner(players);
+            if (playerWins) {
+                break;
+            }
+
+            TakeTurn(players, territoriesDict);
+        }
     }
 
-    private static IDictionary<string, Territory> CreateTerritories() {
+    private IDictionary<string, Territory> CreateTerritories() {
         Territory alaska = new("Alaska", "North America");
         Territory northwestTerritory = new("Northwest Territory", "North America");
         Territory alberta = new("Alberta", "North America");
@@ -195,13 +211,13 @@ public class Game {
         return terrsDict;
     }
     
-    private static IEnumerable<Player> CreatePlayers(int numPlayers) {
+    private IEnumerable<Player> CreatePlayers(int numPlayers) {
         IList<Color> colors = [Color.Red, Color.Blue, Color.Green, Color.Purple, Color.Yellow, Color.Orange];
         IList<Player> players = [];
         for (int i = 0; i < numPlayers; i++) {
             Console.WriteLine($"Enter player {i}'s name.");
-            string? name = Console.ReadLine();
-            players.Add(new Player(name, colors[i])); // Should check name for null value before using
+            string? name = Console.ReadLine(); // Should check name for null value before using
+            players.Add(new Player(name, colors[i]));
         }
 
         if (numPlayers == 2) {
@@ -211,7 +227,7 @@ public class Game {
         return players;
     }
 
-    private static IList<Player> SetNumArmies(IList<Player> players) {
+    private IList<Player> SetNumArmies(IList<Player> players) {
         IList<Player> newPlayers = players;
         
         foreach (Player player in newPlayers) {
@@ -227,12 +243,11 @@ public class Game {
         return newPlayers;
     }
 
-    private static int GetDieRoll() {
-        Random rand = new Random();
-        return rand.Next(1, 7);
+    private int GetDieRoll() {
+        return Random.Next(1, 7);
     }
 
-    private static IList<Player> GetOrderedPlayers(IList<Player> players) {
+    private IList<Player> GetOrderedPlayers(IList<Player> players) {
         IList<int> rolls = [];
 
         for (int i = 0; i < players.Count; i++) {
@@ -253,7 +268,7 @@ public class Game {
         return sortedPlayers;
     }
 
-    private static int Max(int[] nums) {
+    private int Max(int[] nums) {
         int max = nums[0];
 
         for (int i = 1; i < nums.Length; i++) {
@@ -265,7 +280,7 @@ public class Game {
         return max;
     }
 
-    private static int GetNumPlayers() {
+    private int GetNumPlayers() {
         Console.WriteLine("How many players are there?");
         int numPlayers;
         while (true) {
@@ -290,15 +305,14 @@ public class Game {
         return numPlayers;
     }
 
-    private static void ClaimTerritories(IList<Player> players, IDictionary<string, Territory> territories) {
+    private void ClaimTerritories(IList<Player> players, IDictionary<string, Territory> territories) {
         int currentPlayerIndex = 0;
-        TextInfo ti = new CultureInfo("en-US", false).TextInfo;
 
         int i = 0;
         while (i < territories.Count) {
             Console.WriteLine($"Player {i}, claim a territory.");
             string? input = Console.ReadLine(); // Should check input for null
-            string selection = ti.ToTitleCase(input);
+            string selection = TextInfo.ToTitleCase(input);
 
             if (!territories.Keys.Contains(selection)) {
                 Console.WriteLine("Invalid. Try again.");
@@ -311,18 +325,17 @@ public class Game {
         }
     }
 
-    private static void PlaceInitialArmies(IList<Player> players, IDictionary<string, Territory> territories) {
+    private void PlaceInitialArmies(IList<Player> players, IDictionary<string, Territory> territories) {
         int currentPlayerIndex = 0;
-        TextInfo ti = new CultureInfo("en-US", false).TextInfo;
 
         while (players[currentPlayerIndex].NumArmies > 0) {
             Console.WriteLine($"Player {currentPlayerIndex}, place an army on an owned territory.");
             String? input = Console.ReadLine(); // Should check input for null
-            string selection = ti.ToTitleCase(input);
+            string selection = TextInfo.ToTitleCase(input);
 
             if (!territories.Keys.Contains(selection)) {
                 Console.WriteLine("Invalid. Try again.");
-            } else if (players[currentPlayerIndex] != territories[selection].OccupyingPlayer) {
+            } else if (players[currentPlayerIndex] != territories[selection].Player) {
                 Console.WriteLine("You do not own this territory.");
             } else {
                 players[currentPlayerIndex].PlaceArmy(territories[selection]);
@@ -332,7 +345,7 @@ public class Game {
         }
     }
 
-    private static bool IsWinner(IList<Player> players) {
+    private bool IsWinner(IList<Player> players) {
         foreach (Player player in players) {
             if (player.NumTerritoriesOwned == 42) {
                 return true;
@@ -340,5 +353,193 @@ public class Game {
         }
 
         return false;
+    }
+
+    private void TakeTurn(IList<Player> players, IDictionary<string, Territory> terrs) {
+        int i = 0;
+        int currentPlayer = 0;
+        while (i < players.Count) {
+            if (players[i].NumArmies > 0) {
+                Console.WriteLine("Deploy armies!");
+                DeployArmies(players[i], terrs);
+            }
+
+            Console.WriteLine($"Player {players[currentPlayer].Name}, will you attack? (Y/N)");
+            string? input = Console.ReadLine(); // Should check for null before using
+            string answer = TextInfo.ToTitleCase(input);
+
+            if (answer == "Y") {
+                Attack(players[currentPlayer], terrs);
+            } else if (answer == "N") {
+                Console.WriteLine($"Player {players[currentPlayer].Name}, will you fortify? (Y/N)");
+                input = Console.ReadLine(); // Should check for null before using
+                answer = TextInfo.ToTitleCase(input);
+                if (answer == "Y") {
+                    Console.WriteLine("Fortify!");
+                    Fortify(players[currentPlayer], terrs);
+                    currentPlayer = (currentPlayer + 1) % players.Count;
+                    i += 1;
+                } else if (answer == "N") {
+                    currentPlayer = (currentPlayer + 1) % players.Count;
+                    i += 1;
+                } else { // Getting here will restart the whole loop, but it should only go back to last input
+                    Console.WriteLine("Invalid!");
+                }
+            } else {
+                Console.WriteLine("Invalid!");
+            }
+        }
+    }
+
+    private void DeployArmies(Player player, IDictionary<string, Territory> terrs) {
+        while (player.NumArmies != 0) {
+            Console.WriteLine($"Player {player.Name}, select a territory to place an army");
+            string? input = Console.ReadLine(); // Should check for null before using
+            string terrName = TextInfo.ToTitleCase(input);
+
+            if (!terrs.ContainsKey(terrName)) {
+                Console.WriteLine("Invalid! Try again.");
+            } else if (player != terrs[terrName].Player) {
+                Console.WriteLine("Not you territory!");
+            } else {
+                Console.WriteLine($"You have {player.NumArmies} to deploy.");
+                int numArmies;
+                if (Int32.TryParse(input, out numArmies)) {
+                    player.PlaceArmy(terrs[terrName], numArmies);
+                    Console.WriteLine($"{numArmies} armies have been moved to {terrs[terrName].Name}!");
+                } else {
+                    Console.WriteLine("Input was not a number! Try again.");
+                }
+            }
+        }
+    }
+
+    private void Fortify(Player player, IDictionary<string, Territory> terrs) {
+        Console.WriteLine($"Player {player.Name}, select a territory to move armies from.");
+        string? input = Console.ReadLine(); // Should check for null before using
+        string fromTerrName = TextInfo.ToTitleCase(input);
+
+        Console.WriteLine("Select a territory to place armies.");
+        input = Console.ReadLine(); // Should check for null before using
+        string toTerrName = TextInfo.ToTitleCase(input);
+
+        if (!terrs.ContainsKey(fromTerrName) || !terrs.ContainsKey(toTerrName)) {
+            Console.WriteLine("Invalid! Try again.");
+            Fortify(player, terrs);
+        } else if (player == terrs[fromTerrName].Player && player == terrs[toTerrName].Player) {
+            player.PlaceArmyFortify(terrs[fromTerrName], terrs[toTerrName]);
+        } else {
+            Console.WriteLine("You must select territories you own!");
+            Fortify(player, terrs);
+        }
+    }
+
+    private void Attack(Player player, IDictionary<string, Territory> terrs) {
+        Console.WriteLine($"Player {player.Name}, what territory will you attack?");
+        string? input = Console.ReadLine(); // Should check for null before using
+        string defendTerrName = TextInfo.ToTitleCase(input);
+
+        if (!terrs.ContainsKey(defendTerrName)) {
+            Console.WriteLine("Invalid territory!");
+        } else if (player == terrs[defendTerrName].Player) {
+            Console.WriteLine("You own this territory!");
+            return;
+        }
+
+        Console.WriteLine($"Player {player.Name}, what territory will you attack from?");
+        input = Console.ReadLine(); // Should check for null before using
+        string attackTerrName = TextInfo.ToTitleCase(input);
+
+        if (!terrs.ContainsKey(attackTerrName)) {
+            Console.WriteLine("Invalid territory!");
+            return;
+        }
+
+        if (terrs[attackTerrName].NumArmies <= 1) {
+            Console.WriteLine("Not enough armies to attack!");
+            return;
+        }
+
+        bool isNeighbor = terrs[defendTerrName].IsNeighbor(terrs[attackTerrName]);
+        terrs[attackTerrName].PrintNeighbors();
+
+        if (!isNeighbor) {
+            Console.WriteLine("These territories are not neighbors!");
+            return;
+        } else {
+            StartAttack(terrs[attackTerrName], terrs[defendTerrName], player,
+                    terrs[defendTerrName].Player); // Should verify that defendTerr is occupied
+        }
+    }
+
+    private void StartAttack(Territory attackTerr, Territory defendTerr,
+            Player attackPlayer, Player defendPlayer) {
+        List<int> attackRolls = [];
+        List<int> defendRolls = [];
+        while (attackTerr.NumArmies >= 2) {
+            if (attackTerr.NumArmies >= 4) {
+                for (int i = 0; i < 3; i++) {
+                    attackRolls.Add(GetDieRoll());
+                }
+            } else {
+                for (int i = 0; i < 2; i++) {
+                    attackRolls.Add(GetDieRoll());
+                }
+            } // There should be separate cases for NumArmies == 2, 3, and 4+
+            attackRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
+
+            if (defendTerr.NumArmies >= 2) { // Should make sure defendRolls.Count <= attackRolls.Count
+                for (int i = 0; i < 2; i++) {
+                    defendRolls.Add(GetDieRoll());
+                }
+            } else {
+                for (int i = 0; i < 1; i++) {
+                    defendRolls.Add(GetDieRoll());
+                }
+            }
+            defendRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
+
+            if (defendRolls.Count == 2) {
+                if (attackRolls[0] > defendRolls[0] && attackRolls[1] > defendRolls[1]) {
+                    defendTerr.NumArmies -= 2;
+                    Console.WriteLine("Defending territory lost 2 army!");
+                } else if (attackRolls[0] < defendRolls[0] && attackRolls[1] < defendRolls[1]) {
+                    attackTerr.NumArmies -= 2;
+                    Console.WriteLine("Attacking territory lost 2 army!");
+                } else if (attackRolls[0] > defendRolls[0] && attackRolls[1] < defendRolls[1]) {
+                    attackTerr.NumArmies -= 1;
+                    defendTerr.NumArmies -= 1;
+                    Console.WriteLine("Both territories lost 1 army!");
+                } else if (attackRolls[0] < defendRolls[0] && attackRolls[1] > defendRolls[1]) {
+                    attackTerr.NumArmies -= 1;
+                    defendTerr.NumArmies -= 1;
+                    Console.WriteLine("Both territories lost 1 army!");
+                } // Defender should win ties
+            } else if (defendRolls.Count == 1) {
+                if (attackRolls[0] > defendRolls[0]) {
+                    defendTerr.NumArmies -= 1;
+                    Console.WriteLine("Defending territory lost 1 army!");
+                } else if (attackRolls[0] < defendRolls[0]) {
+                    attackTerr.NumArmies -= 1;
+                } // Defender should win ties
+            }
+
+            if (defendTerr.NumArmies == 0) {
+                PlaceArmyWinner(attackPlayer, defendTerr, attackTerr.NumArmies - 1);
+                Console.WriteLine("Attacking player has won the territory! Your armies now occupy it.");
+                break;
+            } else if (attackTerr.NumArmies == 1) {
+                Console.WriteLine("Defending player has retained the territory!");
+                break;
+            }
+        }
+    }
+
+    private void PlaceArmyWinner(Player player, Territory terr, int numArmies) {
+        Console.WriteLine($"{numArmies} armies have been moved to {terr.Name}!");
+        if (terr.Player != player) {
+            terr.Player = player;
+        }
+        terr.NumArmies += numArmies;
     }
 }

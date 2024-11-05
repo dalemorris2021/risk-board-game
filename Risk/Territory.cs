@@ -7,7 +7,7 @@ public class Territory {
     public string Continent { get; set; }
     public int NumArmies { get; set; }
     public ICollection<Territory> Neighbors { get; set; }
-    public Player? OccupyingPlayer { get; set; }
+    public Player? Player { get; set; }
     public int[] Coordinates { get; set; }
     public Color Color { get; set; }
     public int TerrNum { get; set; }
@@ -17,7 +17,7 @@ public class Territory {
         Continent = continent;
         NumArmies = 0;
         Neighbors = [];
-        OccupyingPlayer = null;
+        Player = null;
         Coordinates = [0, 0];
         Color = Color.Black;
         TerrNum = 0;
