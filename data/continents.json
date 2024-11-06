@@ -1,0 +1,164 @@
+[
+  {
+    "Name": "North America",
+    "ArmyBonus": 5,
+    "Territories": [
+      {
+        "Name": "Alaska"
+      },
+      {
+        "Name": "Northwest Territory"
+      },
+      {
+        "Name": "Alberta"
+      },
+      {
+        "Name": "Ontario"
+      },
+      {
+        "Name": "Western US"
+      },
+      {
+        "Name": "Eastern US"
+      },
+      {
+        "Name": "Central America"
+      },
+      {
+        "Name": "Quebec"
+      },
+      {
+        "Name": "Greenland"
+      }
+    ]
+  },
+  {
+    "Name": "Europe",
+    "ArmyBonus": 5,
+    "Territories": [
+      {
+        "Name": "Iceland"
+      },
+      {
+        "Name": "Great Britain"
+      },
+      {
+        "Name": "Northern Europe"
+      },
+      {
+        "Name": "Western Europe"
+      },
+      {
+        "Name": "Southern Europe"
+      },
+      {
+        "Name": "Scandinavia"
+      },
+      {
+        "Name": "Ukraine"
+      }
+    ]
+  },
+  {
+    "Name": "Asia",
+    "ArmyBonus": 7,
+    "Territories": [
+      {
+        "Name": "Afghanistan"
+      },
+      {
+        "Name": "Ural"
+      },
+      {
+        "Name": "Siberia"
+      },
+      {
+        "Name": "Yakutsk"
+      },
+      {
+        "Name": "Kamchatka"
+      },
+      {
+        "Name": "Irkutsk"
+      },
+      {
+        "Name": "Mongolia"
+      },
+      {
+        "Name": "China"
+      },
+      {
+        "Name": "Middle East"
+      },
+      {
+        "Name": "India"
+      },
+      {
+        "Name": "Siam"
+      },
+      {
+        "Name": "Japan"
+      }
+    ]
+  },
+  {
+    "Name": "South America",
+    "ArmyBonus": 2,
+    "Territories": [
+      {
+        "Name": "Venezuela"
+      },
+      {
+        "Name": "Peru"
+      },
+      {
+        "Name": "Brazil"
+      },
+      {
+        "Name": "Argentina"
+      }
+    ]
+  },
+  {
+    "Name": "Africa",
+    "ArmyBonus": 3,
+    "Territories": [
+      {
+        "Name": "North Africa"
+      },
+      {
+        "Name": "Egypt"
+      },
+      {
+        "Name": "East Africa"
+      },
+      {
+        "Name": "Congo"
+      },
+      {
+        "Name": "South Africa"
+      },
+      {
+        "Name": "Madagascar"
+      }
+    ]
+  },
+  {
+    "Name": "Australia",
+    "ArmyBonus": 2,
+    "Territories": [
+      {
+        "Name": "Indonesia"
+      },
+      {
+        "Name": "New Guinea"
+      },
+      {
+        "Name": "Western Australia"
+      },
+      {
+        "Name": "Eastern Australia"
+      }
+    ]
+  }
+]
