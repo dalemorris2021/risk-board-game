@@ -251,7 +251,7 @@ public class Game {
         IList<int> rolls = [];
 
         for (int i = 0; i < players.Count; i++) {
-            Console.WriteLine($"Player {i}, press enter to roll die.");
+            Console.WriteLine($"Player {i + 1}, press enter to roll die.");
             Console.ReadLine(); // Should wait for input
             int roll = GetDieRoll();
             Console.WriteLine(roll);
@@ -261,9 +261,9 @@ public class Game {
 
         IList<Player> sortedPlayers = [];
         for (int i = 0; i < players.Count; i++) {
-            sortedPlayers[i] = players[rolls.IndexOf(Max((int[]) rolls))];
-            players.Remove(players[rolls.IndexOf(Max((int[]) rolls))]);
-            rolls.Remove(Max((int[]) rolls));
+            sortedPlayers[i] = players[rolls.IndexOf(Max(rolls.ToArray()))];
+            players.Remove(players[rolls.IndexOf(Max(rolls.ToArray()))]);
+            rolls.Remove(Max(rolls.ToArray()));
         }
 
         return sortedPlayers;
@@ -311,7 +311,7 @@ public class Game {
 
         int i = 0;
         while (i < territories.Count) {
-            Console.WriteLine($"Player {i}, claim a territory.");
+            Console.WriteLine($"Player {i + 1}, claim a territory.");
             string? input = Console.ReadLine(); // Should check input for null
             string selection = TextInfo.ToTitleCase(input);
 
