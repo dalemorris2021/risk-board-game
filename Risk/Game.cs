@@ -215,7 +215,7 @@ public class Game {
         IList<Color> colors = [Color.Red, Color.Blue, Color.Green, Color.Purple, Color.Yellow, Color.Orange];
         IList<Player> players = [];
         for (int i = 0; i < numPlayers; i++) {
-            Console.WriteLine($"Enter player {i}'s name.");
+            Console.WriteLine($"Enter player {i + 1}'s name.");
             string? name = Console.ReadLine(); // Should check name for null value before using
             players.Add(new Player(name, colors[i]));
         }
@@ -255,6 +255,7 @@ public class Game {
             Console.ReadLine(); // Should wait for input
             int roll = GetDieRoll();
             Console.WriteLine(roll);
+            Console.WriteLine();
             rolls.Add(roll);
         }
 
