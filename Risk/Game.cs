@@ -248,9 +248,10 @@ public class Game {
     }
 
     private IList<Player> GetOrderedPlayers(IList<Player> players) {
+        int numPlayers = players.Count;
         IList<int> rolls = [];
 
-        for (int i = 0; i < players.Count; i++) {
+        for (int i = 0; i < numPlayers; i++) {
             Console.WriteLine($"Player {i + 1}, press enter to roll die.");
             Console.ReadLine(); // Should wait for input
             int roll = GetDieRoll();
@@ -260,10 +261,13 @@ public class Game {
         }
 
         IList<Player> sortedPlayers = [];
-        for (int i = 0; i < players.Count; i++) {
-            sortedPlayers[i] = players[rolls.IndexOf(Max(rolls.ToArray()))];
-            players.Remove(players[rolls.IndexOf(Max(rolls.ToArray()))]);
-            rolls.Remove(Max(rolls.ToArray()));
+        for (int i = 0; i < numPlayers; i++) {
+            int maxRoll = Max(rolls.ToArray());
+            sortedPlayers.Add(players[rolls.IndexOf(maxRoll)]);
+            players.Remove(players[rolls.IndexOf(maxRoll)]);
+            rolls.Remove(maxRoll);
+            Console.WriteLine(sortedPlayers[i].Name);
+            Console.WriteLine($"i = {i}");
         }
 
         return sortedPlayers;
