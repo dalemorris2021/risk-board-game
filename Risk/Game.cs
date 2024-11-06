@@ -266,8 +266,6 @@ public class Game {
             sortedPlayers.Add(players[rolls.IndexOf(maxRoll)]);
             players.Remove(players[rolls.IndexOf(maxRoll)]);
             rolls.Remove(maxRoll);
-            Console.WriteLine(sortedPlayers[i].Name);
-            Console.WriteLine($"i = {i}");
         }
 
         return sortedPlayers;
