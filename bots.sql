@@ -13,7 +13,7 @@ CREATE TABLE user (
 CREATE TABLE bot (
     id INT NOT NULL,
     name VARCHAR(255).
-    -- code ,
+    code_path VARCHAR(255),
     PRIMARY KEY (id)
 );
 
