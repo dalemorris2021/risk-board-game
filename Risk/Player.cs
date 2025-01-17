@@ -20,7 +20,7 @@ public class Player {
     public IEnumerable<Territory> TerritoriesConquered(IDictionary<string, Territory> terrsDict) {
         IList<Territory> territories = [];
         foreach (Territory terr in terrsDict.Values) {
-            if (terr.OccupyingPlayer == this) {
+            if (terr.Player == this) {
                 territories.Add(terr);
             }
         }
@@ -29,8 +29,8 @@ public class Player {
     }
 
     public void PlaceArmy(Territory terr, int numArmies = 1) {
-        if (terr.OccupyingPlayer == null) {
-            terr.OccupyingPlayer = this;
+        if (terr.Player == null) {
+            terr.Player = this;
         }
 
         if (NumArmies >= numArmies) {
