@@ -1,1 +1,1 @@
-dotnet run --project ./Risk
+dotnet run --project ./src/Risk
