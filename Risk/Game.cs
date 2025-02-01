@@ -55,7 +55,8 @@ public class Game {
             Console.WriteLine();
         }
 
-        PlaceInitialArmies(players, territoriesDict);
+        DistributeArmies(players, territoriesDict);
+        Console.WriteLine("The armies have been evenly distributed.");
 
         while (true) {
             bool playerWins = HasWinner(players);
@@ -385,6 +386,22 @@ public class Game {
         }
     }
 
+    private void DistributeArmies(IList<Player> players, IDictionary<string, Territory> territories) {
+        int terrIndex = 0;
+        for (int i = 0; i < players.Count; i++) {
+            IDictionary<string, Territory> playerTerrs = GetPlayerTerritories(players[i], territories);
+            IList<Territory> playerTerrsList = playerTerrs.Values.ToList();
+
+            while (players[i].NumArmies > 0) {
+                players[i].PlaceArmy(playerTerrsList[terrIndex], 1);
+                terrIndex++;
+                if (terrIndex >= playerTerrsList.Count) {
+                    terrIndex = 0;
+                }
+            }
+        }
+    }
+
     private bool HasWinner(IList<Player> players) {
         foreach (Player player in players) {
             if (player.NumTerritoriesOwned == 42) {
@@ -609,5 +626,17 @@ public class Game {
             terr.Player = player;
         }
         terr.NumArmies += numArmies;
+    }
+
+    public IDictionary<string, Territory> GetPlayerTerritories(Player player, IDictionary<string, Territory> territories) {
+        IDictionary<string, Territory> playerTerrs = new Dictionary<string, Territory>();
+
+        foreach (Territory terr in territories.Values) {
+            if (player.Equals(terr.Player)) {
+                playerTerrs.Add(terr.Name, terr);
+            }
+        }
+
+        return playerTerrs;
     }
 }
