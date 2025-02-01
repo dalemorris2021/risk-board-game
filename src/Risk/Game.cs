@@ -387,8 +387,8 @@ public class Game {
     }
 
     private void DistributeArmies(IList<Player> players, IDictionary<string, Territory> territories) {
-        int terrIndex = 0;
         for (int i = 0; i < players.Count; i++) {
+            int terrIndex = 0;
             IDictionary<string, Territory> playerTerrs = GetPlayerTerritories(players[i], territories);
             IList<Territory> playerTerrsList = playerTerrs.Values.ToList();
 
