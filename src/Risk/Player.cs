@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace Risk;
 
-public class Player {
+public class Player : IPlayer {
     public string Name { get; set; }
     public IEnumerable<Card> Cards { get; set; }
     public int NumArmies { get; set; }
@@ -15,6 +15,10 @@ public class Player {
         NumArmies = 0;
         NumTerritoriesOwned = 0;
         Color = color;
+    }
+
+    public void TakeTurn(Game game) {
+        return;
     }
 
     public IEnumerable<Territory> TerritoriesConquered(IDictionary<string, Territory> terrsDict) {

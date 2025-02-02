@@ -7,7 +7,7 @@ public class Territory {
     public string Continent { get; set; }
     public int NumArmies { get; set; }
     public ICollection<Territory> Neighbors { get; set; }
-    public Player? Player { get; set; }
+    public IPlayer? Player { get; set; }
     public int[] Coordinates { get; set; }
     public Color Color { get; set; }
     public int TerrNum { get; set; }
