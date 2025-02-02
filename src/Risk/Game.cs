@@ -23,7 +23,7 @@ public class Game {
     public void Run() {
         Console.WriteLine("Welcome to Risk!");
         Console.WriteLine("----------------");
-        Console.WriteLine("Need 3 to 6 players to start.");
+        Console.WriteLine("Need 2 to 6 players to start.");
         Console.WriteLine();
 
         int numPlayers = GetNumPlayers();
@@ -54,7 +54,7 @@ public class Game {
         DistributeTerritories(Players, Territories);
         foreach (IPlayer player in Players) {
             Console.WriteLine(player.Name);
-            foreach (Territory terr in player.TerritoriesConquered(Territories)) {
+            foreach (Territory terr in TerritoriesConquered(player, Territories)) {
                 Console.WriteLine($"* {terr.Name}");
             }
             Console.WriteLine();
@@ -233,7 +233,7 @@ public class Game {
         return terrsDict;
     }
     
-    private IList<IPlayer> CreatePlayers(int numPlayers) {
+    private static IList<IPlayer> CreatePlayers(int numPlayers) {
         IList<Color> colors = [Color.Red, Color.Blue, Color.Green, Color.Purple, Color.Yellow, Color.Orange];
         IList<IPlayer> players = [];
         for (int i = 0; i < numPlayers; i++) {
@@ -247,13 +247,13 @@ public class Game {
         }
 
         if (numPlayers == 2) {
-            players.Add(new Player("Neutral", colors[numPlayers]));
+            players.Add(new NeutralBot(colors[numPlayers]));
         }
 
         return players;
     }
 
-    private IList<IPlayer> SetNumArmies(IList<IPlayer> players) {
+    private static IList<IPlayer> SetNumArmies(IList<IPlayer> players) {
         IList<IPlayer> newPlayers = players;
         
         foreach (IPlayer player in newPlayers) {
@@ -297,7 +297,7 @@ public class Game {
         return sortedPlayers;
     }
 
-    private int Max(int[] nums) {
+    private static int Max(int[] nums) {
         int max = nums[0];
 
         for (int i = 1; i < nums.Length; i++) {
@@ -309,7 +309,7 @@ public class Game {
         return max;
     }
 
-    private int GetNumPlayers() {
+    private static int GetNumPlayers() {
         Console.WriteLine("How many players are there?");
         int numPlayers;
         while (true) {
@@ -318,10 +318,7 @@ public class Game {
                 Console.WriteLine(END_OF_INPUT_MESSAGE);
                 throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
             } else if (Int32.TryParse(input, out numPlayers)) {
-                if (numPlayers == 2) {
-                    Console.WriteLine("2-player mode has not yet been implemented.");
-                    Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
-                } else if (numPlayers < 2 || numPlayers > 6) {
+                if (numPlayers < 2 || numPlayers > 6) {
                     Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
                 } else {
                     break;
@@ -349,7 +346,7 @@ public class Game {
             if (!territories.Keys.Contains(selection)) {
                 Console.WriteLine("Invalid. Try again.");
             } else {
-                players[currentPlayerIndex].PlaceArmy(territories[selection]);
+                PlaceArmy(players[currentPlayerIndex], territories[selection]);
                 players[currentPlayerIndex].NumTerritoriesOwned += 1;
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
                 i++;
@@ -367,7 +364,7 @@ public class Game {
             nameIndex = Random.Next(unusedTerrNames.Count);
             selection = unusedTerrNames[nameIndex];
 
-            players[currentPlayerIndex].PlaceArmy(territories[selection]);
+            PlaceArmy(players[currentPlayerIndex], territories[selection]);
             players[currentPlayerIndex].NumTerritoriesOwned += 1;
 
             unusedTerrNames.Remove(selection);
@@ -393,7 +390,7 @@ public class Game {
             } else if (players[currentPlayerIndex] != territories[selection].Player) {
                 Console.WriteLine("You do not own this territory.");
             } else {
-                players[currentPlayerIndex].PlaceArmy(territories[selection]);
+                PlaceArmy(players[currentPlayerIndex], territories[selection]);
                 players[currentPlayerIndex].NumTerritoriesOwned += 1;
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
             }
@@ -407,7 +404,7 @@ public class Game {
             IList<Territory> playerTerrsList = playerTerrs.Values.ToList();
 
             while (players[i].NumArmies > 0) {
-                players[i].PlaceArmy(playerTerrsList[terrIndex], 1);
+                PlaceArmy(players[i], playerTerrsList[terrIndex], 1);
                 terrIndex++;
                 if (terrIndex >= playerTerrsList.Count) {
                     terrIndex = 0;
@@ -416,7 +413,7 @@ public class Game {
         }
     }
 
-    private bool HasWinner(IList<IPlayer> players) {
+    private static bool HasWinner(IList<IPlayer> players) {
         foreach (IPlayer player in players) {
             if (player.NumTerritoriesOwned == 42) {
                 return true;
@@ -444,7 +441,7 @@ public class Game {
                 Console.WriteLine($"You have {player.NumArmies} to deploy.");
                 int numArmies;
                 if (Int32.TryParse(input, out numArmies)) {
-                    player.PlaceArmy(terrs[terrName], numArmies);
+                    PlaceArmy(player, terrs[terrName], numArmies);
                     Console.WriteLine($"{numArmies} armies have been moved to {terrs[terrName].Name}!");
                 } else {
                     Console.WriteLine("Input was not a number! Try again.");
@@ -474,7 +471,7 @@ public class Game {
             Console.WriteLine("Invalid! Try again.");
             Fortify(player, terrs);
         } else if (player == terrs[fromTerrName].Player && player == terrs[toTerrName].Player) {
-            player.PlaceArmyFortify(terrs[fromTerrName], terrs[toTerrName]);
+            PlaceArmyFortify(terrs[fromTerrName], terrs[toTerrName]);
         } else {
             Console.WriteLine("You must select territories you own!");
             Fortify(player, terrs);
@@ -590,7 +587,7 @@ public class Game {
         }
     }
 
-    private void PlaceArmyWinner(IPlayer player, Territory terr, int numArmies) {
+    private static void PlaceArmyWinner(IPlayer player, Territory terr, int numArmies) {
         Console.WriteLine($"{numArmies} armies have been moved to {terr.Name}!");
         if (terr.Player != player) {
             terr.Player = player;
@@ -608,5 +605,55 @@ public class Game {
         }
 
         return playerTerrs;
+    }
+
+    public IEnumerable<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict) {
+        IList<Territory> territories = [];
+        foreach (Territory terr in terrsDict.Values) {
+            if (player == terr.Player) {
+                territories.Add(terr);
+            }
+        }
+
+        return territories;
+    }
+
+    public static void PlaceArmy(IPlayer player, Territory terr, int numArmies = 1) {
+        if (terr.Player == null) {
+            terr.Player = player;
+        }
+
+        if (player.NumArmies >= numArmies) {
+            terr.NumArmies += numArmies;
+            player.NumArmies -= numArmies;
+        }
+    }
+
+    public static void PlaceArmyFortify(Territory from, Territory to) {
+        const string END_OF_INPUT_MESSAGE = "Reached end of input";
+        const string ENTER_NUM_ARMIES_MESSAGE = "How many armies would you like to place?";
+        
+        if (from.NumArmies == 1) {
+            Console.WriteLine($"You only have one army at {from.Name}");
+            return;
+        }
+        
+        int numArmies;
+        while (true) {
+            Console.WriteLine($"There are {from.NumArmies - 1} armies available to move.");
+            Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
+            string? input = Console.ReadLine();
+            if (input == null) {
+                Console.WriteLine(END_OF_INPUT_MESSAGE);
+                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
+            } else if (Int32.TryParse(input, out numArmies)) {
+                break;
+            } else {
+                Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
+            }
+        }
+
+        to.NumArmies += numArmies;
+        from.NumArmies -= numArmies;
     }
 }
