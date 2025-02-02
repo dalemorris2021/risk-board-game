@@ -7,18 +7,12 @@ public class Game {
     private const string ENTER_NUM_PLAYERS_MESSAGE = "Please enter a number between 3 and 6.";
     private const string END_OF_INPUT_MESSAGE = "Reached end of input";
     private const string UNKNOWN_ERROR_MESSAGE = "An unknown error has occurred";
-    public IList<IPlayer> Players { get; private set; }
+    public IList<IPlayer> Players { get; private set; } = [];
     public int PlayerTurn { get; private set; }
-    public IDictionary<string, Territory> Territories { get; private set; }
-    public TextInfo TextInfo { get; }
-    public Random Random { get; }
-
-    public Game() {
-        TextInfo = new CultureInfo("en-US", false).TextInfo;
-        Random = new Random();
-        Players = [];
-        Territories = new Dictionary<string, Territory>();
-    }
+    public IDictionary<string, Territory> Territories { get; private set; } = new Dictionary<string, Territory>();
+    public TextInfo TextInfo { get; } = new CultureInfo("en-US", false).TextInfo;
+    public Random Random { get; } = new Random();
+    public IList<Action> Actions { get; } = [];
 
     public void Run() {
         Console.WriteLine("Welcome to Risk!");
@@ -655,5 +649,16 @@ public class Game {
 
         to.NumArmies += numArmies;
         from.NumArmies -= numArmies;
+    }
+
+    public void TakeAction(Action action) {
+        if (!Actions.Contains(action)) {
+            Console.WriteLine("You can't do that right now!");
+            return;
+        }
+
+        switch (action) {
+        case Action.ATTACK: break;
+        }
     }
 }
