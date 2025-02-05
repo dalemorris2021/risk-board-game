@@ -256,7 +256,7 @@ public class Game {
             case 4: player.NumArmies = 30; break;
             case 5: player.NumArmies = 25; break;
             case 6: player.NumArmies = 20; break;
-            default: throw new ArgumentException("Players should have length between 3 and 6.");
+            default: throw new ArgumentException("Players should have length between 2 and 6.");
             }
         }
 
