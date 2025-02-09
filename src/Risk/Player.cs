@@ -2,13 +2,30 @@ using System.Drawing;
 
 namespace Risk;
 
-public class Player(string name, Color color) : IPlayer {
-    public string Name { get; set; } = name;
+public class Player : IPlayer {
+    public string Name { get; set; }
     public IEnumerable<Card> Cards { get; set; } = []; // Player shouldn't be able to see other players' cards
     public int NumArmies { get; set; } = 0;
     public int NumTerritoriesOwned { get; set; } = 0;
-    public Color Color { get; set; } = color;
+    public Color Color { get; set; }
     private const string END_OF_INPUT_MESSAGE = "Reached end of input";
+
+    public Player(string name, Color color) {
+        Name = name;
+        Cards = [];
+        NumArmies = 0;
+        NumTerritoriesOwned = 0;
+        Color = color;
+    }
+
+    public Player(Color color) {
+        Console.WriteLine("Enter a player name: ");
+        Name = Console.ReadLine() ?? throw new EndOfStreamException();
+        Cards = [];
+        NumArmies = 0;
+        NumTerritoriesOwned = 0;
+        Color = color;
+    }
 
     public void TakeTurn(Game game) {
         int i = 0;

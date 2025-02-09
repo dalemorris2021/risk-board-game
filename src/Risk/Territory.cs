@@ -2,26 +2,16 @@ using System.Drawing;
 
 namespace Risk;
 
-public class Territory {
-    public string Name { get; set; }
-    public string Continent { get; set; }
-    public int NumArmies { get; set; }
-    public ICollection<Territory> Neighbors { get; set; }
-    public IPlayer? Player { get; set; }
-    public int[] Coordinates { get; set; }
-    public Color Color { get; set; }
-    public int TerrNum { get; set; }
-
-    public Territory(string name, string continent) {
-        Name = name;
-        Continent = continent;
-        NumArmies = 0;
-        Neighbors = [];
-        Player = null;
-        Coordinates = [0, 0];
-        Color = Color.Black;
-        TerrNum = 0;
-    }
+public class Territory(string name, string continent)
+{
+    public string Name { get; set; } = name;
+    public string Continent { get; set; } = continent;
+    public int NumArmies { get; set; } = 0;
+    public ICollection<Territory> Neighbors { get; set; } = [];
+    public IPlayer? Player { get; set; } = null;
+    public int[] Coordinates { get; set; } = [0, 0];
+    public Color Color { get; set; } = Color.Black;
+    public int TerrNum { get; set; } = 0;
 
     public bool IsNeighbor(Territory terr) {
         return Neighbors.Contains(terr);

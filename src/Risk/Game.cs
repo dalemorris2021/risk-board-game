@@ -3,41 +3,23 @@ using System.Globalization;
 
 namespace Risk;
 
-public class Game {
-    private const string ENTER_NUM_PLAYERS_MESSAGE = "Please enter a number between 3 and 6.";
-    private const string END_OF_INPUT_MESSAGE = "Reached end of input";
-    private const string UNKNOWN_ERROR_MESSAGE = "An unknown error has occurred";
-    public IList<IPlayer> Players { get; private set; } = [];
-    public int PlayerTurn { get; private set; }
+public class Game(IList<IPlayer> players) {
+    public IList<IPlayer> Players { get; private set; } = players;
+    public int PlayerTurn { get; private set; } = 0;
     public IDictionary<string, Territory> Territories { get; private set; } = new Dictionary<string, Territory>();
     public TextInfo TextInfo { get; } = new CultureInfo("en-US", false).TextInfo;
     public Random Random { get; } = new Random();
-    public IList<Action> Actions { get; } = [];
+    public IList<Action> Actions { get; private set; } = [];
 
     public void Run() {
-        Console.WriteLine("Welcome to Risk!");
-        Console.WriteLine("----------------");
-        Console.WriteLine("Need 2 to 6 players to start.");
-        Console.WriteLine();
-
-        int numPlayers = GetNumPlayers();
-        Console.WriteLine();
-        Players = CreatePlayers(numPlayers);
-        Console.WriteLine();
-
-        Console.WriteLine("Players: ");
-        foreach (IPlayer player in Players) {
-            Console.WriteLine(player.Name);
-        }
-        Console.WriteLine();
-
         Players = SetNumArmies(Players);
         int numStartingArmies = Players[0].NumArmies;
         Console.WriteLine($"Each player will start with {numStartingArmies} armies.");
 
+        Console.WriteLine("The order of play will be randomized.");
         Players = GetOrderedPlayers(Players);
 
-        Console.WriteLine("Players: ");
+        Console.WriteLine("Players:");
         foreach (IPlayer player in Players) {
             Console.WriteLine(player.Name);
         }
@@ -57,23 +39,10 @@ public class Game {
         DistributeArmies(Players, Territories);
         Console.WriteLine("The armies have been evenly distributed.");
 
-        while (true) {
-            bool playerWins = HasWinner(Players);
-            if (playerWins) {
-                break;
-            }
-
+        while (!HasWinner(Players)) {
             Players[PlayerTurn].TakeTurn(this);
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
         }
-    }
-
-    public IList<IPlayer> GetPlayers() {
-        return Players;
-    }
-
-    public IDictionary<string, Territory> GetTerritories() {
-        return Territories;
     }
 
     private static IDictionary<string, Territory> CreateTerritories() {
@@ -226,38 +195,19 @@ public class Game {
 
         return terrsDict;
     }
-    
-    private static IList<IPlayer> CreatePlayers(int numPlayers) {
-        IList<Color> colors = [Color.Red, Color.Blue, Color.Green, Color.Purple, Color.Yellow, Color.Orange];
-        IList<IPlayer> players = [];
-        for (int i = 0; i < numPlayers; i++) {
-            Console.WriteLine($"Enter player {i + 1}'s name.");
-            string? name = Console.ReadLine();
-            if (name == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            }
-            players.Add(new Player(name, colors[i]));
-        }
-
-        if (numPlayers == 2) {
-            players.Add(new NeutralBot(colors[numPlayers]));
-        }
-
-        return players;
-    }
 
     private static IList<IPlayer> SetNumArmies(IList<IPlayer> players) {
         IList<IPlayer> newPlayers = players;
         
         foreach (IPlayer player in newPlayers) {
-            switch (players.Count) {
-            case 3: player.NumArmies = 35; break;
-            case 4: player.NumArmies = 30; break;
-            case 5: player.NumArmies = 25; break;
-            case 6: player.NumArmies = 20; break;
-            default: throw new ArgumentException("Players should have length between 2 and 6.");
-            }
+            player.NumArmies = players.Count switch {
+                2 => 40,
+                3 => 35,
+                4 => 30,
+                5 => 25,
+                6 => 20,
+                _ => throw new ArgumentException("Players should have length between 2 and 6."),
+            };
         }
 
         return newPlayers;
@@ -272,17 +222,13 @@ public class Game {
         IList<int> rolls = [];
 
         for (int i = 0; i < numPlayers; i++) {
-            Console.WriteLine($"{players[i].Name}, press enter to roll die.");
-            Console.ReadLine();
             int roll = GetDieRoll();
-            Console.WriteLine(roll);
-            Console.WriteLine();
             rolls.Add(roll);
         }
 
         IList<IPlayer> sortedPlayers = [];
         for (int i = 0; i < numPlayers; i++) {
-            int maxRoll = Max(rolls.ToArray());
+            int maxRoll = rolls.ToArray().Max();
             sortedPlayers.Add(players[rolls.IndexOf(maxRoll)]);
             players.Remove(players[rolls.IndexOf(maxRoll)]);
             rolls.Remove(maxRoll);
@@ -291,53 +237,15 @@ public class Game {
         return sortedPlayers;
     }
 
-    private static int Max(int[] nums) {
-        int max = nums[0];
-
-        for (int i = 1; i < nums.Length; i++) {
-            if (nums[i] > max) {
-                max = nums[i];
-            }
-        }
-
-        return max;
-    }
-
-    private static int GetNumPlayers() {
-        Console.WriteLine("How many players are there?");
-        int numPlayers;
-        while (true) {
-            string? input = Console.ReadLine();
-            if (input == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            } else if (Int32.TryParse(input, out numPlayers)) {
-                if (numPlayers < 2 || numPlayers > 6) {
-                    Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
-                } else {
-                    break;
-                }
-            } else {
-                Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
-            }
-        }
-
-        return numPlayers;
-    }
-
     private void ClaimTerritories(IList<IPlayer> players, IDictionary<string, Territory> territories) {
         int currentPlayerIndex = 0;
         int i = 0;
         while (i < territories.Count) {
             Console.WriteLine($"{players[currentPlayerIndex].Name}, claim a territory.");
-            string? input = Console.ReadLine();
-            if (input == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            }
+            string input = InputHandler.GetInput();
             string selection = TextInfo.ToTitleCase(input);
 
-            if (!territories.Keys.Contains(selection)) {
+            if (!territories.ContainsKey(selection)) {
                 Console.WriteLine("Invalid. Try again.");
             } else {
                 PlaceArmy(players[currentPlayerIndex], territories[selection]);
@@ -349,7 +257,7 @@ public class Game {
     }
 
     private void DistributeTerritories(IList<IPlayer> players, IDictionary<string, Territory> territories) {
-        IList<string> unusedTerrNames = territories.Keys.ToList();
+        IList<string> unusedTerrNames = [.. territories.Keys];
 
         int currentPlayerIndex = 0;
         string selection;
@@ -360,7 +268,6 @@ public class Game {
 
             PlaceArmy(players[currentPlayerIndex], territories[selection]);
             players[currentPlayerIndex].NumTerritoriesOwned += 1;
-
             unusedTerrNames.Remove(selection);
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
@@ -372,14 +279,10 @@ public class Game {
 
         while (players[currentPlayerIndex].NumArmies > 0) {
             Console.WriteLine($"{players[currentPlayerIndex].Name}, place an army on an owned territory.");
-            String? input = Console.ReadLine();
-            if (input == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            }
+            string input = InputHandler.GetInput();
             string selection = TextInfo.ToTitleCase(input);
 
-            if (!territories.Keys.Contains(selection)) {
+            if (!territories.ContainsKey(selection)) {
                 Console.WriteLine("Invalid. Try again.");
             } else if (players[currentPlayerIndex] != territories[selection].Player) {
                 Console.WriteLine("You do not own this territory.");
@@ -395,7 +298,7 @@ public class Game {
         for (int i = 0; i < players.Count; i++) {
             int terrIndex = 0;
             IDictionary<string, Territory> playerTerrs = GetPlayerTerritories(players[i], territories);
-            IList<Territory> playerTerrsList = playerTerrs.Values.ToList();
+            IList<Territory> playerTerrsList = [.. playerTerrs.Values];
 
             while (players[i].NumArmies > 0) {
                 PlaceArmy(players[i], playerTerrsList[terrIndex], 1);
@@ -420,17 +323,13 @@ public class Game {
     public void DeployArmies(IPlayer player, IDictionary<string, Territory> terrs) {
         while (player.NumArmies != 0) {
             Console.WriteLine($"{player.Name}, select a territory to place an army");
-            string? input = Console.ReadLine();
-            if (input == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            }
+            string input = InputHandler.GetInput();
             string terrName = TextInfo.ToTitleCase(input);
 
             if (!terrs.ContainsKey(terrName)) {
                 Console.WriteLine("Invalid! Try again.");
             } else if (player != terrs[terrName].Player) {
-                Console.WriteLine("Not you territory!");
+                Console.WriteLine("Not your territory!");
             } else {
                 Console.WriteLine($"You have {player.NumArmies} to deploy.");
                 int numArmies;
@@ -446,19 +345,11 @@ public class Game {
 
     public void Fortify(IPlayer player, IDictionary<string, Territory> terrs) {
         Console.WriteLine($"{player.Name}, select a territory to move armies from.");
-        string? input = Console.ReadLine();
-        if (input == null) {
-            Console.WriteLine(END_OF_INPUT_MESSAGE);
-            throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-        }
+        string input = InputHandler.GetInput();
         string fromTerrName = TextInfo.ToTitleCase(input);
 
         Console.WriteLine("Select a territory to place armies.");
-        input = Console.ReadLine();
-        if (input == null) {
-            Console.WriteLine(END_OF_INPUT_MESSAGE);
-            throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-        }
+        input = InputHandler.GetInput();
         string toTerrName = TextInfo.ToTitleCase(input);
 
         if (!terrs.ContainsKey(fromTerrName) || !terrs.ContainsKey(toTerrName)) {
@@ -474,11 +365,7 @@ public class Game {
 
     public void Attack(IPlayer player, IDictionary<string, Territory> terrs) {
         Console.WriteLine($"{player.Name}, what territory will you attack?");
-        string? input = Console.ReadLine();
-        if (input == null) {
-            Console.WriteLine(END_OF_INPUT_MESSAGE);
-            throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-        }
+        string input = InputHandler.GetInput();
         string defendTerrName = TextInfo.ToTitleCase(input);
 
         if (!terrs.ContainsKey(defendTerrName)) {
@@ -489,11 +376,7 @@ public class Game {
         }
 
         Console.WriteLine($"{player.Name}, what territory will you attack from?");
-        input = Console.ReadLine();
-        if (input == null) {
-            Console.WriteLine(END_OF_INPUT_MESSAGE);
-            throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-        }
+        input = InputHandler.GetInput();
         string attackTerrName = TextInfo.ToTitleCase(input);
 
         if (!terrs.ContainsKey(attackTerrName)) {
@@ -624,7 +507,6 @@ public class Game {
     }
 
     public static void PlaceArmyFortify(Territory from, Territory to) {
-        const string END_OF_INPUT_MESSAGE = "Reached end of input";
         const string ENTER_NUM_ARMIES_MESSAGE = "How many armies would you like to place?";
         
         if (from.NumArmies == 1) {
@@ -636,11 +518,8 @@ public class Game {
         while (true) {
             Console.WriteLine($"There are {from.NumArmies - 1} armies available to move.");
             Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
-            string? input = Console.ReadLine();
-            if (input == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            } else if (Int32.TryParse(input, out numArmies)) {
+            string input = InputHandler.GetInput();
+            if (Int32.TryParse(input, out numArmies)) {
                 break;
             } else {
                 Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
