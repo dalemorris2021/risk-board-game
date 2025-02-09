@@ -35,11 +35,16 @@ public class Game(IList<IPlayer> players) {
         DistributeArmies(Players, Territories);
         Console.WriteLine("The armies have been evenly distributed.");
 
-        while (!HasWinner(Players)) {
+        IPlayer? winner;
+        while ((winner = GetWinner(Players)) == null) {
+            Players[PlayerTurn].NumArmies += TerritoriesConquered(Players[PlayerTurn], Territories).Count;
             Actions = [Action.DEPLOY];
             Players[PlayerTurn].TakeTurn(this);
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
         }
+
+        Console.WriteLine("The game has been decided!");
+        Console.WriteLine($"The winner is {winner.Name}!");
     }
 
     private static IDictionary<string, Territory> CreateTerritories() {
@@ -311,14 +316,14 @@ public class Game(IList<IPlayer> players) {
         }
     }
 
-    private static bool HasWinner(IList<IPlayer> players) {
+    private static IPlayer? GetWinner(IList<IPlayer> players) {
         foreach (IPlayer player in players) {
             if (player.NumTerritoriesOwned == 42) {
-                return true;
+                return player;
             }
         }
 
-        return false;
+        return null;
     }
 
     public void Attack(Territory attackTerr, Territory defendTerr,
@@ -414,7 +419,7 @@ public class Game(IList<IPlayer> players) {
         return playerTerrs;
     }
 
-    public IEnumerable<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict) {
+    public IList<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict) {
         IList<Territory> territories = [];
         foreach (Territory terr in terrsDict.Values) {
             if (player == terr.Player) {
