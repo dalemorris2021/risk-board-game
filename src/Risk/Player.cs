@@ -9,8 +9,7 @@ public class Player : IPlayer {
     public int NumArmies { get; set; } = 0;
     public int NumTerritoriesOwned { get; set; } = 0;
     public Color Color { get; set; }
-    private TextInfo TextInfo = new CultureInfo("en-US").TextInfo;
-    private const string END_OF_INPUT_MESSAGE = "Reached end of input";
+    private readonly TextInfo TextInfo = new CultureInfo("en-US").TextInfo;
 
     public Player(string name, Color color) {
         Name = name;
@@ -30,45 +29,51 @@ public class Player : IPlayer {
     }
 
     public void TakeTurn(Game game) {
-        int i = 0;
-        int currentPlayer = 0;
-        while (i < game.Players.Count) {
-            if (game.Players[i].NumArmies > 0) {
-                Console.WriteLine("Deploy armies!");
-                DeployArmies(game);
-            }
+        string input;
+        string answer;
 
-            Console.WriteLine($"{game.Players[currentPlayer].Name}, will you attack? (Y/N)");
-            string? input = Console.ReadLine();
-            if (input == null) {
-                Console.WriteLine(END_OF_INPUT_MESSAGE);
-                throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-            }
-            string answer = game.TextInfo.ToTitleCase(input);
+        Console.WriteLine($"{Name}'s turn!");
+        if (NumArmies > 0) { // Where does NumArmies get set?
+            Console.WriteLine("Deploy armies!");
+            DeployArmies(game);
+        }
 
-            if (answer == "Y") {
+        bool isAttacking = true;
+        while (isAttacking) {
+            Console.WriteLine("Will you attack? (Y/N)"); // Should notify player when they can no longer attack
+            input = TextInfo.ToTitleCase(InputHandler.GetInput());
+            answer = TextInfo.ToTitleCase(input);
+
+            switch (answer) {
+            case "Y":
                 Attack(game);
-            } else if (answer == "N") {
-                Console.WriteLine($"{game.Players[currentPlayer].Name}, will you fortify? (Y/N)");
-                input = Console.ReadLine();
-                if (input == null) {
-                    Console.WriteLine(END_OF_INPUT_MESSAGE);
-                    throw new EndOfStreamException(END_OF_INPUT_MESSAGE);
-                }
-                answer = game.TextInfo.ToTitleCase(input);
-                if (answer == "Y") {
-                    Console.WriteLine("Fortify!");
-                    Fortify(game);
-                    currentPlayer = (currentPlayer + 1) % game.Players.Count;
-                    i += 1;
-                } else if (answer == "N") {
-                    currentPlayer = (currentPlayer + 1) % game.Players.Count;
-                    i += 1;
-                } else { // Getting here will restart the whole loop, but it should only go back to last input
-                    Console.WriteLine("Invalid!");
-                }
-            } else {
+                break;
+            case "N":
+                isAttacking = false;
+                break;
+            default:
                 Console.WriteLine("Invalid!");
+                break;
+            }
+        }
+
+        bool isFortifying = true;
+        while (isFortifying) {
+            Console.WriteLine("Will you fortify? (Y/N)");
+            input = InputHandler.GetInput();
+            answer = TextInfo.ToTitleCase(input);
+
+            switch (answer) {
+            case "Y":
+                Console.WriteLine("Fortify!");
+                Fortify(game);
+                break;
+            case "N":
+                isFortifying = false;
+                break;
+            default:
+                Console.WriteLine("Invalid!");
+                break;
             }
         }
     }
