@@ -46,6 +46,13 @@ public class Game(IList<IPlayer> players) {
             }
             
             Players[PlayerTurn].TakeTurn(this);
+
+            foreach (IPlayer player in Players) {
+                if (player.NumTerritoriesOwned == 0) {
+                    Players.Remove(player);
+                }
+            }
+
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
         }
 
