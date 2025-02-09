@@ -9,8 +9,11 @@ public class App {
         Console.WriteLine("Need 2 to 6 players to start.");
         Console.WriteLine();
 
+        /*
         int numPlayers = GetNumPlayers();
         IList<IPlayer> players = CreatePlayers(numPlayers);
+        */
+        IList<IPlayer> players = [new RandomBot(), new RandomBot()];
 
         Game game = new Game(players);
         Thread gameThread = new Thread(new ThreadStart(game.Run));

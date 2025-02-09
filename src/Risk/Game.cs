@@ -428,8 +428,7 @@ public class Game(IList<IPlayer> players) {
     }
 
     private void SpecialDeploy(IPlayer player, Territory terr, int numArmies = 1) {
-        if (!Actions.Contains(Action.DEPLOY)
-            || !Territories.ContainsKey(terr.Name)) { // Players shouldn't be able to call this directly if they don't own the territory
+        if (!Territories.ContainsKey(terr.Name)) { // Players shouldn't be able to call this directly if they don't own the territory
             return;
         }
 
