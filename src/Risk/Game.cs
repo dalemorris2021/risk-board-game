@@ -316,15 +316,11 @@ public class Game(IList<IPlayer> players) {
     private void DistributeArmies(IList<IPlayer> players, IDictionary<string, Territory> territories) {
         for (int i = 0; i < players.Count; i++) {
             int terrIndex = 0;
-            IDictionary<string, Territory> playerTerrs = GetPlayerTerritories(players[i], territories);
-            IList<Territory> playerTerrsList = [.. playerTerrs.Values];
+            IList<Territory> playerTerrsList = TerritoriesConquered(players[i], territories);
 
             while (players[i].NumArmies > 0) {
                 SpecialDeploy(players[i], playerTerrsList[terrIndex], 1);
                 terrIndex = (terrIndex + 1) % playerTerrsList.Count;
-                if (terrIndex >= playerTerrsList.Count) {
-                    terrIndex = 0;
-                }
             }
         }
     }
@@ -418,18 +414,6 @@ public class Game(IList<IPlayer> players) {
             terr.Player = player;
         }
         terr.NumArmies += numArmies;
-    }
-
-    public IDictionary<string, Territory> GetPlayerTerritories(IPlayer player, IDictionary<string, Territory> territories) {
-        IDictionary<string, Territory> playerTerrs = new Dictionary<string, Territory>();
-
-        foreach (Territory terr in territories.Values) {
-            if (player.Equals(terr.Player)) {
-                playerTerrs.Add(terr.Name, terr);
-            }
-        }
-
-        return playerTerrs;
     }
 
     public IList<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict) {
