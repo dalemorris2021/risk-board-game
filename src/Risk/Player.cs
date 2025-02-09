@@ -39,7 +39,7 @@ public class Player : IPlayer {
         }
 
         bool isAttacking = true;
-        while (isAttacking) {
+        do {
             Console.WriteLine("Will you attack? (Y/N)"); // Should notify player when they can no longer attack
             input = TextInfo.ToTitleCase(InputHandler.GetInput());
             answer = TextInfo.ToTitleCase(input);
@@ -55,10 +55,10 @@ public class Player : IPlayer {
                 Console.WriteLine("Invalid!");
                 break;
             }
-        }
+        } while (isAttacking);
 
         bool isFortifying = true;
-        while (isFortifying) {
+        do {
             Console.WriteLine("Will you fortify? (Y/N)");
             input = InputHandler.GetInput();
             answer = TextInfo.ToTitleCase(input);
@@ -75,7 +75,7 @@ public class Player : IPlayer {
                 Console.WriteLine("Invalid!");
                 break;
             }
-        }
+        } while (isFortifying);
     }
 
     private void DeployArmies(Game game) {
@@ -93,7 +93,7 @@ public class Player : IPlayer {
                 input = InputHandler.GetInput();
                 int numArmies;
                 if (Int32.TryParse(input, out numArmies)) {
-                    game.PlaceArmy(this, game.Territories[terrName], numArmies);
+                    game.Deploy(this, game.Territories[terrName], numArmies);
                     Console.WriteLine($"{numArmies} armies have been moved to {game.Territories[terrName].Name}!");
                 } else {
                     Console.WriteLine("Input was not a number! Try again.");
@@ -135,7 +135,7 @@ public class Player : IPlayer {
             Console.WriteLine("These territories are not neighbors!");
             return;
         } else {
-            game.StartAttack(game.Territories[attackTerrName], game.Territories[defendTerrName], this,
+            game.Attack(game.Territories[attackTerrName], game.Territories[defendTerrName], this,
                     game.Territories[defendTerrName].Player); // Should verify that defendTerr is occupied
         }
     }
@@ -180,6 +180,6 @@ public class Player : IPlayer {
             }
         }
 
-        game.DeferredPlaceArmyFortify(numArmies, from, to);
+        game.Fortify(numArmies, from, to);
     }
 }

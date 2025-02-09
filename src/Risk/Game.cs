@@ -36,6 +36,7 @@ public class Game(IList<IPlayer> players) {
         Console.WriteLine("The armies have been evenly distributed.");
 
         while (!HasWinner(Players)) {
+            Actions = [Action.DEPLOY];
             Players[PlayerTurn].TakeTurn(this);
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
         }
@@ -264,7 +265,7 @@ public class Game(IList<IPlayer> players) {
             nameIndex = Random.Next(unusedTerrNames.Count);
             selection = unusedTerrNames[nameIndex];
 
-            PlaceArmy(players[currentPlayerIndex], territories[selection]);
+            SpecialDeploy(players[currentPlayerIndex], territories[selection]);
             players[currentPlayerIndex].NumTerritoriesOwned += 1;
             unusedTerrNames.Remove(selection);
 
@@ -301,7 +302,7 @@ public class Game(IList<IPlayer> players) {
             IList<Territory> playerTerrsList = [.. playerTerrs.Values];
 
             while (players[i].NumArmies > 0) {
-                PlaceArmy(players[i], playerTerrsList[terrIndex], 1);
+                SpecialDeploy(players[i], playerTerrsList[terrIndex], 1);
                 terrIndex = (terrIndex + 1) % playerTerrsList.Count;
                 if (terrIndex >= playerTerrsList.Count) {
                     terrIndex = 0;
@@ -320,9 +321,10 @@ public class Game(IList<IPlayer> players) {
         return false;
     }
 
-    public void StartAttack(Territory attackTerr, Territory defendTerr,
+    public void Attack(Territory attackTerr, Territory defendTerr,
             IPlayer attackPlayer, IPlayer defendPlayer) {
-        if (!Territories.ContainsKey(defendTerr.Name)
+        if (!Actions.Contains(Action.ATTACK)
+            || !Territories.ContainsKey(defendTerr.Name)
             || attackPlayer == Territories[defendTerr.Name].Player
             || !Territories.ContainsKey(attackTerr.Name)
             || Territories[attackTerr.Name].NumArmies <= 1
@@ -423,8 +425,9 @@ public class Game(IList<IPlayer> players) {
         return territories;
     }
 
-    public void PlaceArmy(IPlayer player, Territory terr, int numArmies = 1) {
-        if (!Territories.ContainsKey(terr.Name)) { // Players shouldn't be able to call this directly if they don't own the territory
+    private void SpecialDeploy(IPlayer player, Territory terr, int numArmies = 1) {
+        if (!Actions.Contains(Action.DEPLOY)
+            || !Territories.ContainsKey(terr.Name)) { // Players shouldn't be able to call this directly if they don't own the territory
             return;
         }
 
@@ -438,8 +441,26 @@ public class Game(IList<IPlayer> players) {
         }
     }
 
-    public void DeferredPlaceArmyFortify(int numArmies, Territory from, Territory to) {
-        if (!Territories.ContainsKey(from.Name) || !Territories.ContainsKey(to.Name)
+    public void Deploy(IPlayer player, Territory terr, int numArmies = 1) {
+        if (!Actions.Contains(Action.DEPLOY)
+            || !Territories.ContainsKey(terr.Name)
+            || player != terr.Player) { // Players shouldn't be able to call this directly if they don't own the territory
+            return;
+        }
+
+        if (terr.Player == null) {
+            terr.Player = player;
+        }
+
+        if (player.NumArmies >= numArmies) {
+            terr.NumArmies += numArmies;
+            player.NumArmies -= numArmies;
+        }
+    }
+
+    public void Fortify(int numArmies, Territory from, Territory to) {
+        if (!Actions.Contains(Action.FORTIFY)
+            || !Territories.ContainsKey(from.Name) || !Territories.ContainsKey(to.Name)
             || !(this == Territories[from.Name].Player) || !(this == Territories[to.Name].Player)
             || numArmies >= from.NumArmies) {
             return;
@@ -447,15 +468,7 @@ public class Game(IList<IPlayer> players) {
 
         to.NumArmies += numArmies;
         from.NumArmies -= numArmies;
-    }
 
-    public void TakeAction(Action action) {
-        if (!Actions.Contains(action)) {
-            return;
-        }
-
-        switch (action) {
-        case Action.ATTACK: break;
-        }
+        Actions = [];
     }
 }

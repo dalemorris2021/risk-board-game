@@ -10,6 +10,6 @@ public class RandomBeater : IPlayer {
     public Color Color { get; set; }
 
     public void TakeTurn(Game game) {
-        game.TakeAction(game.Actions[0]);
+        
     }
 }

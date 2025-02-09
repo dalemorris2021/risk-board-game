@@ -1,6 +1,7 @@
 namespace Risk;
 
 public enum Action {
+    DEPLOY,
     ATTACK,
-    GETTROOPS,
+    FORTIFY,
 }
