@@ -1,13 +1,9 @@
-using System.Drawing;
-using System.Globalization;
-
 namespace Risk;
 
 public class Game(IList<IPlayer> players) {
     public IList<IPlayer> Players { get; private set; } = players;
     public int PlayerTurn { get; private set; } = 0;
     public IDictionary<string, Territory> Territories { get; private set; } = new Dictionary<string, Territory>();
-    public TextInfo TextInfo { get; } = new CultureInfo("en-US", false).TextInfo;
     public Random Random { get; } = new Random();
     public IList<Action> Actions { get; private set; } = [];
 
@@ -306,7 +302,7 @@ public class Game(IList<IPlayer> players) {
 
             while (players[i].NumArmies > 0) {
                 PlaceArmy(players[i], playerTerrsList[terrIndex], 1);
-                terrIndex++;
+                terrIndex = (terrIndex + 1) % playerTerrsList.Count;
                 if (terrIndex >= playerTerrsList.Count) {
                     terrIndex = 0;
                 }
@@ -428,7 +424,7 @@ public class Game(IList<IPlayer> players) {
     }
 
     public void PlaceArmy(IPlayer player, Territory terr, int numArmies = 1) {
-        if (!Territories.ContainsKey(terr.Name) || player != terr.Player) {
+        if (!Territories.ContainsKey(terr.Name)) { // Players shouldn't be able to call this directly if they don't own the territory
             return;
         }
 

@@ -12,12 +12,6 @@ public class App {
         int numPlayers = GetNumPlayers();
         IList<IPlayer> players = CreatePlayers(numPlayers);
 
-        Console.WriteLine("Players: ");
-        foreach (IPlayer player in players) {
-            Console.WriteLine(player.Name);
-        }
-        Console.WriteLine();
-
         Game game = new Game(players);
         Thread gameThread = new Thread(new ThreadStart(game.Run));
         gameThread.Start();
