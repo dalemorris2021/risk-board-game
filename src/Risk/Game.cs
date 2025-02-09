@@ -38,7 +38,13 @@ public class Game(IList<IPlayer> players) {
         IPlayer? winner;
         while ((winner = GetWinner(Players)) == null) {
             Players[PlayerTurn].NumArmies += TerritoriesConquered(Players[PlayerTurn], Territories).Count;
-            Actions = [Action.DEPLOY];
+
+            if (Players[PlayerTurn].NumArmies > 0) {
+                Actions = [Action.DEPLOY];
+            } else {
+                Actions = [Action.ATTACK, Action.FORTIFY];
+            }
+            
             Players[PlayerTurn].TakeTurn(this);
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
         }
@@ -460,6 +466,10 @@ public class Game(IList<IPlayer> players) {
         if (player.NumArmies >= numArmies) {
             terr.NumArmies += numArmies;
             player.NumArmies -= numArmies;
+        }
+
+        if (player.NumArmies == 0) {
+            Actions = [Action.ATTACK, Action.FORTIFY];
         }
     }
 
