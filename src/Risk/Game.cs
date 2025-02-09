@@ -237,6 +237,7 @@ public class Game(IList<IPlayer> players) {
         return sortedPlayers;
     }
 
+    /*
     private void ClaimTerritories(IList<IPlayer> players, IDictionary<string, Territory> territories) {
         int currentPlayerIndex = 0;
         int i = 0;
@@ -255,6 +256,7 @@ public class Game(IList<IPlayer> players) {
             }
         }
     }
+    */
 
     private void DistributeTerritories(IList<IPlayer> players, IDictionary<string, Territory> territories) {
         IList<string> unusedTerrNames = [.. territories.Keys];
@@ -274,6 +276,7 @@ public class Game(IList<IPlayer> players) {
         }
     }
 
+    /*
     private void PlaceInitialArmies(IList<IPlayer> players, IDictionary<string, Territory> territories) {
         int currentPlayerIndex = 0;
 
@@ -293,6 +296,7 @@ public class Game(IList<IPlayer> players) {
             }
         }
     }
+    */
 
     private void DistributeArmies(IList<IPlayer> players, IDictionary<string, Territory> territories) {
         for (int i = 0; i < players.Count; i++) {
@@ -320,89 +324,16 @@ public class Game(IList<IPlayer> players) {
         return false;
     }
 
-    public void DeployArmies(IPlayer player, IDictionary<string, Territory> terrs) {
-        while (player.NumArmies != 0) {
-            Console.WriteLine($"{player.Name}, select a territory to place an army");
-            string input = InputHandler.GetInput();
-            string terrName = TextInfo.ToTitleCase(input);
-
-            if (!terrs.ContainsKey(terrName)) {
-                Console.WriteLine("Invalid! Try again.");
-            } else if (player != terrs[terrName].Player) {
-                Console.WriteLine("Not your territory!");
-            } else {
-                Console.WriteLine($"You have {player.NumArmies} to deploy.");
-                int numArmies;
-                if (Int32.TryParse(input, out numArmies)) {
-                    PlaceArmy(player, terrs[terrName], numArmies);
-                    Console.WriteLine($"{numArmies} armies have been moved to {terrs[terrName].Name}!");
-                } else {
-                    Console.WriteLine("Input was not a number! Try again.");
-                }
-            }
-        }
-    }
-
-    public void Fortify(IPlayer player, IDictionary<string, Territory> terrs) {
-        Console.WriteLine($"{player.Name}, select a territory to move armies from.");
-        string input = InputHandler.GetInput();
-        string fromTerrName = TextInfo.ToTitleCase(input);
-
-        Console.WriteLine("Select a territory to place armies.");
-        input = InputHandler.GetInput();
-        string toTerrName = TextInfo.ToTitleCase(input);
-
-        if (!terrs.ContainsKey(fromTerrName) || !terrs.ContainsKey(toTerrName)) {
-            Console.WriteLine("Invalid! Try again.");
-            Fortify(player, terrs);
-        } else if (player == terrs[fromTerrName].Player && player == terrs[toTerrName].Player) {
-            PlaceArmyFortify(terrs[fromTerrName], terrs[toTerrName]);
-        } else {
-            Console.WriteLine("You must select territories you own!");
-            Fortify(player, terrs);
-        }
-    }
-
-    public void Attack(IPlayer player, IDictionary<string, Territory> terrs) {
-        Console.WriteLine($"{player.Name}, what territory will you attack?");
-        string input = InputHandler.GetInput();
-        string defendTerrName = TextInfo.ToTitleCase(input);
-
-        if (!terrs.ContainsKey(defendTerrName)) {
-            Console.WriteLine("Invalid territory!");
-        } else if (player == terrs[defendTerrName].Player) {
-            Console.WriteLine("You own this territory!");
-            return;
-        }
-
-        Console.WriteLine($"{player.Name}, what territory will you attack from?");
-        input = InputHandler.GetInput();
-        string attackTerrName = TextInfo.ToTitleCase(input);
-
-        if (!terrs.ContainsKey(attackTerrName)) {
-            Console.WriteLine("Invalid territory!");
-            return;
-        }
-
-        if (terrs[attackTerrName].NumArmies <= 1) {
-            Console.WriteLine("Not enough armies to attack!");
-            return;
-        }
-
-        bool isNeighbor = terrs[defendTerrName].IsNeighbor(terrs[attackTerrName]);
-        terrs[attackTerrName].PrintNeighbors();
-
-        if (!isNeighbor) {
-            Console.WriteLine("These territories are not neighbors!");
-            return;
-        } else {
-            StartAttack(terrs[attackTerrName], terrs[defendTerrName], player,
-                    terrs[defendTerrName].Player); // Should verify that defendTerr is occupied
-        }
-    }
-
-    private void StartAttack(Territory attackTerr, Territory defendTerr,
+    public void StartAttack(Territory attackTerr, Territory defendTerr,
             IPlayer attackPlayer, IPlayer defendPlayer) {
+        if (!Territories.ContainsKey(defendTerr.Name)
+            || attackPlayer == Territories[defendTerr.Name].Player
+            || !Territories.ContainsKey(attackTerr.Name)
+            || Territories[attackTerr.Name].NumArmies <= 1
+            || !Territories[defendTerr.Name].IsNeighbor(Territories[attackTerr.Name])) {
+            return;
+        }
+
         List<int> attackRolls = [];
         List<int> defendRolls = [];
         while (attackTerr.NumArmies >= 2) {
@@ -432,25 +363,26 @@ public class Game(IList<IPlayer> players) {
                 if (attackRolls[0] > defendRolls[0] && attackRolls[1] > defendRolls[1]) {
                     defendTerr.NumArmies -= 2;
                     Console.WriteLine("Defending territory lost 2 army!");
-                } else if (attackRolls[0] < defendRolls[0] && attackRolls[1] < defendRolls[1]) {
+                } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
                     attackTerr.NumArmies -= 2;
                     Console.WriteLine("Attacking territory lost 2 army!");
-                } else if (attackRolls[0] > defendRolls[0] && attackRolls[1] < defendRolls[1]) {
+                } else if (attackRolls[0] > defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
                     attackTerr.NumArmies -= 1;
                     defendTerr.NumArmies -= 1;
                     Console.WriteLine("Both territories lost 1 army!");
-                } else if (attackRolls[0] < defendRolls[0] && attackRolls[1] > defendRolls[1]) {
+                } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] > defendRolls[1]) {
                     attackTerr.NumArmies -= 1;
                     defendTerr.NumArmies -= 1;
                     Console.WriteLine("Both territories lost 1 army!");
-                } // Defender should win ties
+                }
             } else if (defendRolls.Count == 1) {
                 if (attackRolls[0] > defendRolls[0]) {
                     defendTerr.NumArmies -= 1;
                     Console.WriteLine("Defending territory lost 1 army!");
-                } else if (attackRolls[0] < defendRolls[0]) {
+                } else if (attackRolls[0] <= defendRolls[0]) {
                     attackTerr.NumArmies -= 1;
-                } // Defender should win ties
+                    Console.WriteLine("Attacking territory lost 1 army!");
+                }
             }
 
             if (defendTerr.NumArmies == 0) {
@@ -495,7 +427,11 @@ public class Game(IList<IPlayer> players) {
         return territories;
     }
 
-    public static void PlaceArmy(IPlayer player, Territory terr, int numArmies = 1) {
+    public void PlaceArmy(IPlayer player, Territory terr, int numArmies = 1) {
+        if (!Territories.ContainsKey(terr.Name) || player != terr.Player) {
+            return;
+        }
+
         if (terr.Player == null) {
             terr.Player = player;
         }
@@ -506,24 +442,11 @@ public class Game(IList<IPlayer> players) {
         }
     }
 
-    public static void PlaceArmyFortify(Territory from, Territory to) {
-        const string ENTER_NUM_ARMIES_MESSAGE = "How many armies would you like to place?";
-        
-        if (from.NumArmies == 1) {
-            Console.WriteLine($"You only have one army at {from.Name}");
+    public void DeferredPlaceArmyFortify(int numArmies, Territory from, Territory to) {
+        if (!Territories.ContainsKey(from.Name) || !Territories.ContainsKey(to.Name)
+            || !(this == Territories[from.Name].Player) || !(this == Territories[to.Name].Player)
+            || numArmies >= from.NumArmies) {
             return;
-        }
-        
-        int numArmies;
-        while (true) {
-            Console.WriteLine($"There are {from.NumArmies - 1} armies available to move.");
-            Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
-            string input = InputHandler.GetInput();
-            if (Int32.TryParse(input, out numArmies)) {
-                break;
-            } else {
-                Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
-            }
         }
 
         to.NumArmies += numArmies;
@@ -532,7 +455,6 @@ public class Game(IList<IPlayer> players) {
 
     public void TakeAction(Action action) {
         if (!Actions.Contains(action)) {
-            Console.WriteLine("You can't do that right now!");
             return;
         }
 
