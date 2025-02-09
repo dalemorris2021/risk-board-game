@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace Risk;
 
-public class RandomBot {
+public class RandomBot : IPlayer {
     public string Name { get; set; } = "Random";
     public IEnumerable<Card> Cards { get; set; } = [];
     public int NumArmies { get; set; }
