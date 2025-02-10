@@ -37,7 +37,7 @@ public class Game(IList<IPlayer> players) {
 
         IPlayer? winner;
         while ((winner = GetWinner(Players)) == null) {
-            Players[PlayerTurn].NumArmies += TerritoriesConquered(Players[PlayerTurn], Territories).Count;
+            Players[PlayerTurn].AddArmies(TerritoriesConquered(Players[PlayerTurn], Territories).Count / 3);
 
             if (Players[PlayerTurn].NumArmies > 0) {
                 Actions = [Action.DEPLOY];
@@ -215,7 +215,7 @@ public class Game(IList<IPlayer> players) {
         IList<IPlayer> newPlayers = players;
         
         foreach (IPlayer player in newPlayers) {
-            player.NumArmies = players.Count switch {
+            int numArmies = players.Count switch {
                 2 => 40,
                 3 => 35,
                 4 => 30,
@@ -223,6 +223,8 @@ public class Game(IList<IPlayer> players) {
                 6 => 20,
                 _ => throw new ArgumentException("Players should have length between 2 and 6."),
             };
+
+            player.AddArmies(numArmies);
         }
 
         return newPlayers;
@@ -348,63 +350,67 @@ public class Game(IList<IPlayer> players) {
 
         List<int> attackRolls = [];
         List<int> defendRolls = [];
-        while (attackTerr.NumArmies >= 2) {
-            if (attackTerr.NumArmies >= 4) {
-                for (int i = 0; i < 3; i++) {
-                    attackRolls.Add(GetDieRoll());
-                }
-            } else {
-                for (int i = 0; i < 2; i++) {
-                    attackRolls.Add(GetDieRoll());
-                }
-            } // There should be separate cases for NumArmies == 2, 3, and 4+
-            attackRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
+        Console.WriteLine($"numArmies = {attackTerr.NumArmies}");
+        if (attackTerr.NumArmies >= 4) {
+            for (int i = 0; i < 3; i++) {
+                attackRolls.Add(GetDieRoll());
+            }
+        } else if (attackTerr.NumArmies == 3) {
+            for (int i = 0; i < 2; i++) {
+                attackRolls.Add(GetDieRoll());
+            }
+        } else if (attackTerr.NumArmies == 2) {
+            attackRolls.Add(GetDieRoll());
+        } else {
+            return;
+        }
+        attackRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
 
-            if (defendTerr.NumArmies >= 2) { // Should make sure defendRolls.Count <= attackRolls.Count
+        if (attackRolls.Count == 1) {
+            defendRolls.Add(GetDieRoll());
+        } else {
+            if (defendTerr.NumArmies >= 2) {
                 for (int i = 0; i < 2; i++) {
                     defendRolls.Add(GetDieRoll());
                 }
             } else {
-                for (int i = 0; i < 1; i++) {
-                    defendRolls.Add(GetDieRoll());
-                }
+                defendRolls.Add(GetDieRoll());
             }
-            defendRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
+        }
+        
+        defendRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
 
-            if (defendRolls.Count == 2) {
-                if (attackRolls[0] > defendRolls[0] && attackRolls[1] > defendRolls[1]) {
-                    defendTerr.NumArmies -= 2;
-                    Console.WriteLine("Defending territory lost 2 army!");
-                } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
-                    attackTerr.NumArmies -= 2;
-                    Console.WriteLine("Attacking territory lost 2 army!");
-                } else if (attackRolls[0] > defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
-                    attackTerr.NumArmies -= 1;
-                    defendTerr.NumArmies -= 1;
-                    Console.WriteLine("Both territories lost 1 army!");
-                } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] > defendRolls[1]) {
-                    attackTerr.NumArmies -= 1;
-                    defendTerr.NumArmies -= 1;
-                    Console.WriteLine("Both territories lost 1 army!");
-                }
-            } else if (defendRolls.Count == 1) {
-                if (attackRolls[0] > defendRolls[0]) {
-                    defendTerr.NumArmies -= 1;
-                    Console.WriteLine("Defending territory lost 1 army!");
-                } else if (attackRolls[0] <= defendRolls[0]) {
-                    attackTerr.NumArmies -= 1;
-                    Console.WriteLine("Attacking territory lost 1 army!");
-                }
+        if (defendRolls.Count == 2) {
+            if (attackRolls[0] > defendRolls[0] && attackRolls[1] > defendRolls[1]) {
+                defendTerr.SubArmies(2);
+                Console.WriteLine("Defending territory lost 2 army!");
+            } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
+                attackTerr.SubArmies(2);
+                Console.WriteLine("Attacking territory lost 2 army!");
+            } else if (attackRolls[0] > defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
+                attackTerr.SubArmies(1);
+                defendTerr.SubArmies(1);
+                Console.WriteLine("Both territories lost 1 army!");
+            } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] > defendRolls[1]) {
+                attackTerr.SubArmies(1);
+                defendTerr.SubArmies(1);
+                Console.WriteLine("Both territories lost 1 army!");
             }
+        } else if (defendRolls.Count == 1) {
+            if (attackRolls[0] > defendRolls[0]) {
+                defendTerr.SubArmies(1);
+                Console.WriteLine("Defending territory lost 1 army!");
+            } else if (attackRolls[0] <= defendRolls[0]) {
+                attackTerr.SubArmies(1);
+                Console.WriteLine("Attacking territory lost 1 army!");
+            }
+        }
 
-            if (defendTerr.NumArmies == 0) {
-                PlaceArmyWinner(attackPlayer, defendTerr, attackTerr.NumArmies - 1);
-                Console.WriteLine($"{attackPlayer.Name} has won the territory! Your armies now occupy it.");
-                break;
-            } else if (attackTerr.NumArmies == 1) {
-                Console.WriteLine($"{defendPlayer.Name} has retained the territory!");
-                break;
-            }
+        if (defendTerr.NumArmies == 0) {
+            PlaceArmyWinner(attackPlayer, defendTerr, attackTerr.NumArmies - 1);
+            Console.WriteLine($"{attackPlayer.Name} has won the territory! Your armies now occupy it.");
+        } else if (attackTerr.NumArmies == 1) {
+            Console.WriteLine($"{defendPlayer.Name} has retained the territory!");
         }
     }
 
@@ -413,7 +419,7 @@ public class Game(IList<IPlayer> players) {
         if (terr.Player != player) {
             terr.Player = player;
         }
-        terr.NumArmies += numArmies;
+        terr.AddArmies(numArmies);
     }
 
     public IList<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict) {
@@ -437,8 +443,8 @@ public class Game(IList<IPlayer> players) {
         }
 
         if (player.NumArmies >= numArmies) {
-            terr.NumArmies += numArmies;
-            player.NumArmies -= numArmies;
+            terr.AddArmies(numArmies);
+            player.SubArmies(numArmies);
         }
     }
 
@@ -454,8 +460,8 @@ public class Game(IList<IPlayer> players) {
         }
 
         if (player.NumArmies >= numArmies) {
-            terr.NumArmies += numArmies;
-            player.NumArmies -= numArmies;
+            terr.AddArmies(numArmies);
+            player.SubArmies(numArmies);
         }
 
         if (player.NumArmies == 0) {
@@ -471,8 +477,8 @@ public class Game(IList<IPlayer> players) {
             return;
         }
 
-        to.NumArmies += numArmies;
-        from.NumArmies -= numArmies;
+        to.AddArmies(numArmies);
+        from.SubArmies(numArmies);
 
         Actions = [];
     }

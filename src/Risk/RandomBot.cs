@@ -10,6 +10,14 @@ public class RandomBot : IPlayer {
     public Color Color { get; set; }
     private readonly Random random = new Random();
 
+    public void AddArmies(int numArmies) {
+        NumArmies = Math.Min(IPlayer.MAX_ARMIES, NumArmies + numArmies);
+    }
+
+    public void SubArmies(int numArmies) {
+        NumArmies = Math.Max(0, NumArmies - numArmies);
+    }
+
     public void TakeTurn(Game game) {
         DeployAll(game);
         AttackAll(game);
@@ -17,8 +25,19 @@ public class RandomBot : IPlayer {
 
     private void DeployAll(Game game) {
         IList<Territory> terrs = game.TerritoriesConquered(this, game.Territories);
-        while (NumArmies > 0) {
-            game.Deploy(this, terrs[random.Next(terrs.Count)]);
+        Territory terr;
+        while (NumArmies > 0 && terrs.Count > 0) {
+            int randInt = random.Next(terrs.Count);
+            Console.WriteLine($"randInt = {randInt}");
+            Console.WriteLine($"terrs.Count = {terrs.Count}");
+            Console.WriteLine($"numArmies = {NumArmies}");
+            Console.WriteLine();
+            terr = terrs[randInt];
+            if (terr.NumArmies == Territory.MAX_ARMIES) {
+                terrs.Remove(terr);
+            } else {
+                game.Deploy(this, terr);
+            }
         }
     }
 

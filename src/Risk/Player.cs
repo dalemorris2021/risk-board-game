@@ -6,7 +6,7 @@ namespace Risk;
 public class Player : IPlayer {
     public string Name { get; set; }
     public IEnumerable<Card> Cards { get; set; } = []; // Player shouldn't be able to see other players' cards
-    public int NumArmies { get; set; } = 0;
+    public int NumArmies { get; private set; } = 0;
     public int NumTerritoriesOwned { get; set; } = 0;
     public Color Color { get; set; }
     private readonly TextInfo TextInfo = new CultureInfo("en-US").TextInfo;
@@ -26,6 +26,14 @@ public class Player : IPlayer {
         NumArmies = 0;
         NumTerritoriesOwned = 0;
         Color = color;
+    }
+
+    public void AddArmies(int numArmies) {
+        NumArmies = Math.Min(IPlayer.MAX_ARMIES, NumArmies + numArmies);
+    }
+
+    public void SubArmies(int numArmies) {
+        NumArmies = Math.Max(0, NumArmies - numArmies);
     }
 
     public void TakeTurn(Game game) {
