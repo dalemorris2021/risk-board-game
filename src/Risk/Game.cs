@@ -6,6 +6,7 @@ public class Game(IList<IPlayer> players) {
     public IDictionary<string, Territory> Territories { get; private set; } = new Dictionary<string, Territory>();
     public Random Random { get; } = new Random();
     public IList<Action> Actions { get; private set; } = [];
+    private const int MAX_ROUNDS = 200;
 
     public void Run() {
         Players = SetNumArmies(Players);
@@ -36,6 +37,8 @@ public class Game(IList<IPlayer> players) {
         Console.WriteLine("The armies have been evenly distributed.");
 
         IPlayer? winner;
+        int turns = 0;
+        int maxTurns = MAX_ROUNDS * Players.Count;
         while ((winner = GetWinner(Players)) == null) {
             Players[PlayerTurn].AddArmies(TerritoriesConquered(Players[PlayerTurn], Territories).Count / 3);
 
@@ -54,7 +57,20 @@ public class Game(IList<IPlayer> players) {
             }
 
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
+            turns++;
+
+            if (turns >= maxTurns) {
+                break;
+            }
         }
+
+        IList<int> terrCounts = [];
+        for (int i = 0; i < Players.Count; i++) {
+            IPlayer player = Players[i];
+            terrCounts.Add(TerritoriesConquered(player, Territories).Count);
+        }
+
+        winner = Players[terrCounts.IndexOf(terrCounts.Max())];
 
         Console.WriteLine("The game has been decided!");
         Console.WriteLine($"The winner is {winner.Name}!");

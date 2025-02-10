@@ -13,7 +13,7 @@ public class App {
         int numPlayers = GetNumPlayers();
         IList<IPlayer> players = CreatePlayers(numPlayers);
         */
-        IList<IPlayer> players = [new RandomBot(), new RandomBot()];
+        IList<IPlayer> players = [new RandomBot("Random 1"), new RandomBot("Random 2")];
 
         Game game = new Game(players);
         Thread gameThread = new Thread(new ThreadStart(game.Run));

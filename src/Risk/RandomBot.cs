@@ -2,8 +2,8 @@ using System.Drawing;
 
 namespace Risk;
 
-public class RandomBot : IPlayer {
-    public string Name { get; set; } = "Random";
+public class RandomBot(string name) : IPlayer {
+    public string Name { get; set; } = name;
     public IEnumerable<Card> Cards { get; set; } = [];
     public int NumArmies { get; set; }
     public int NumTerritoriesOwned { get; set; }
@@ -28,10 +28,6 @@ public class RandomBot : IPlayer {
         Territory terr;
         while (NumArmies > 0 && terrs.Count > 0) {
             int randInt = random.Next(terrs.Count);
-            Console.WriteLine($"randInt = {randInt}");
-            Console.WriteLine($"terrs.Count = {terrs.Count}");
-            Console.WriteLine($"numArmies = {NumArmies}");
-            Console.WriteLine();
             terr = terrs[randInt];
             if (terr.NumArmies == Territory.MAX_ARMIES) {
                 terrs.Remove(terr);
