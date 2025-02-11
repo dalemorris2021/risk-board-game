@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Tests", "Risk.Tests\Risk.Tests.csproj", "{C6613980-1E89-421F-B993-097C5EC3351D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "src\Risk.Tests", "src\Risk.Tests\Risk.Tests.csproj", "{C6613980-1E89-421F-B993-097C5EC3351D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk", "Risk\Risk.csproj", "{5813CE8B-3038-43EA-BA0D-C1CB7D423E0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "src\Risk", "src\Risk\Risk.csproj", "{5813CE8B-3038-43EA-BA0D-C1CB7D423E0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
