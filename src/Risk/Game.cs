@@ -1,28 +1,35 @@
 namespace Risk;
 
-public class Game(IList<IPlayer> players) {
-    public IList<IPlayer> Players { get; private set; } = players;
-    public int PlayerTurn { get; private set; } = 0;
-    public IDictionary<string, Territory> Territories { get; private set; } = new Dictionary<string, Territory>();
-    public Random Random { get; } = new Random();
-    public IList<Action> Actions { get; private set; } = [];
+public class Game {
+    public IList<IPlayer> Players { get; private set; }
+    public int PlayerTurn { get; private set; }
+    public IDictionary<IPlayer, int> PlayerArmies { get; private set; }
+    public IDictionary<string, Territory> Territories { get; private set; }
+    public Random Random { get; }
+    public IList<Action> Actions { get; private set; }
     private const int MAX_ROUNDS = 200;
+    private const int MAX_PLAYER_ARMIES = 999;
+
+    public Game(IList<IPlayer> players) {
+        Players = GetOrderedPlayers(players);
+        PlayerTurn = 0;
+        PlayerArmies = GetPlayerArmies(players);
+        Territories = CreateTerritories();
+        Random = new Random();
+        Actions = [];
+    }
 
     public void Run() {
-        Players = SetNumArmies(Players);
-        int numStartingArmies = Players[0].NumArmies;
+        int numStartingArmies = PlayerArmies[Players[0]];
         Console.WriteLine($"Each player will start with {numStartingArmies} armies.");
 
         Console.WriteLine("The order of play will be randomized.");
-        Players = GetOrderedPlayers(Players);
 
         Console.WriteLine("Players:");
         foreach (IPlayer player in Players) {
             Console.WriteLine(player.Name);
         }
         Console.WriteLine();
-
-        Territories = CreateTerritories();
         
         DistributeTerritories(Players, Territories);
         foreach (IPlayer player in Players) {
@@ -40,9 +47,9 @@ public class Game(IList<IPlayer> players) {
         int turns = 0;
         int maxTurns = MAX_ROUNDS * Players.Count;
         while ((winner = GetWinner(Players)) == null) {
-            Players[PlayerTurn].AddArmies(TerritoriesConquered(Players[PlayerTurn], Territories).Count / 3);
+            PlayerAddArmies(Players[PlayerTurn], TerritoriesConquered(Players[PlayerTurn], Territories).Count / 3);
 
-            if (Players[PlayerTurn].NumArmies > 0) {
+            if (PlayerArmies[Players[PlayerTurn]] > 0) {
                 Actions = [Action.DEPLOY];
             } else {
                 Actions = [Action.ATTACK, Action.FORTIFY];
@@ -227,23 +234,31 @@ public class Game(IList<IPlayer> players) {
         return terrsDict;
     }
 
-    private static IList<IPlayer> SetNumArmies(IList<IPlayer> players) {
-        IList<IPlayer> newPlayers = players;
-        
-        foreach (IPlayer player in newPlayers) {
-            int numArmies = players.Count switch {
-                2 => 40,
-                3 => 35,
-                4 => 30,
-                5 => 25,
-                6 => 20,
-                _ => throw new ArgumentException("Players should have length between 2 and 6."),
-            };
+    private IDictionary<IPlayer, int> GetPlayerArmies(IList<IPlayer> players) {
+        IDictionary<IPlayer, int> playerArmies = new Dictionary<IPlayer, int>();
 
-            player.AddArmies(numArmies);
+        int numArmies = players.Count switch {
+            2 => 40,
+            3 => 35,
+            4 => 30,
+            5 => 25,
+            6 => 20,
+            _ => throw new ArgumentException("Players should have length between 2 and 6."),
+        };
+        
+        foreach (IPlayer player in players) {
+            PlayerArmies.Add(player, numArmies);
         }
 
-        return newPlayers;
+        return playerArmies;
+    }
+
+    private void PlayerAddArmies(IPlayer player, int numArmies) {
+        PlayerArmies[player] = Math.Min(MAX_PLAYER_ARMIES, PlayerArmies[player] + numArmies);
+    }
+
+    private void PlayerSubArmies(IPlayer player, int numArmies) {
+        PlayerArmies[player] = Math.Max(0, PlayerArmies[player] - numArmies);
     }
 
     private int GetDieRoll() {
@@ -336,7 +351,7 @@ public class Game(IList<IPlayer> players) {
             int terrIndex = 0;
             IList<Territory> playerTerrsList = TerritoriesConquered(players[i], territories);
 
-            while (players[i].NumArmies > 0) {
+            while (PlayerArmies[players[i]] > 0) {
                 SpecialDeploy(players[i], playerTerrsList[terrIndex], 1);
                 terrIndex = (terrIndex + 1) % playerTerrsList.Count;
             }
@@ -458,9 +473,9 @@ public class Game(IList<IPlayer> players) {
             terr.Player = player;
         }
 
-        if (player.NumArmies >= numArmies) {
+        if (PlayerArmies[player] >= numArmies) {
             terr.AddArmies(numArmies);
-            player.SubArmies(numArmies);
+            PlayerSubArmies(player, numArmies);
         }
     }
 
@@ -475,12 +490,12 @@ public class Game(IList<IPlayer> players) {
             terr.Player = player;
         }
 
-        if (player.NumArmies >= numArmies) {
+        if (PlayerArmies[player] >= numArmies) {
             terr.AddArmies(numArmies);
-            player.SubArmies(numArmies);
+            PlayerSubArmies(player, numArmies);
         }
 
-        if (player.NumArmies == 0) {
+        if (PlayerArmies[player] == 0) {
             Actions = [Action.ATTACK, Action.FORTIFY];
         }
     }

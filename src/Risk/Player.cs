@@ -6,7 +6,6 @@ namespace Risk;
 public class Player : IPlayer {
     public string Name { get; set; }
     public IEnumerable<Card> Cards { get; set; } = []; // Player shouldn't be able to see other players' cards
-    public int NumArmies { get; private set; } = 0;
     public int NumTerritoriesOwned { get; set; } = 0;
     public Color Color { get; set; }
     private readonly TextInfo TextInfo = new CultureInfo("en-US").TextInfo;
@@ -14,7 +13,6 @@ public class Player : IPlayer {
     public Player(string name, Color color) {
         Name = name;
         Cards = [];
-        NumArmies = 0;
         NumTerritoriesOwned = 0;
         Color = color;
     }
@@ -23,17 +21,8 @@ public class Player : IPlayer {
         Console.WriteLine("Enter a player name: ");
         Name = Console.ReadLine() ?? throw new EndOfStreamException();
         Cards = [];
-        NumArmies = 0;
         NumTerritoriesOwned = 0;
         Color = color;
-    }
-
-    public void AddArmies(int numArmies) {
-        NumArmies = Math.Min(IPlayer.MAX_ARMIES, NumArmies + numArmies);
-    }
-
-    public void SubArmies(int numArmies) {
-        NumArmies = Math.Max(0, NumArmies - numArmies);
     }
 
     public void TakeTurn(Game game) {
@@ -41,7 +30,7 @@ public class Player : IPlayer {
         string answer;
 
         Console.WriteLine($"{Name}'s turn!");
-        if (NumArmies > 0) { // Where does NumArmies get set?
+        if (game.PlayerArmies[this] > 0) { // Where does NumArmies get set?
             Console.WriteLine("Deploy armies!");
             DeployArmies(game);
         }
@@ -87,7 +76,7 @@ public class Player : IPlayer {
     }
 
     private void DeployArmies(Game game) {
-        while (NumArmies != 0) {
+        while (game.PlayerArmies[this] != 0) {
             Console.WriteLine($"{Name}, select a territory to place an army");
             string input = InputHandler.GetInput();
             string terrName = TextInfo.ToTitleCase(input);
@@ -97,7 +86,7 @@ public class Player : IPlayer {
             } else if (this != game.Territories[terrName].Player) {
                 Console.WriteLine("Not your territory!");
             } else {
-                Console.WriteLine($"You have {NumArmies} to deploy.");
+                Console.WriteLine($"You have {game.PlayerArmies[this]} to deploy.");
                 input = InputHandler.GetInput();
                 int numArmies;
                 if (Int32.TryParse(input, out numArmies)) {
