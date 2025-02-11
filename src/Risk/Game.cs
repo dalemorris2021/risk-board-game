@@ -4,6 +4,7 @@ public class Game {
     public IList<IPlayer> Players { get; private set; }
     public int PlayerTurn { get; private set; }
     public IDictionary<IPlayer, int> PlayerArmies { get; private set; }
+    public IDictionary<IPlayer, IList<Card>> PlayerCards { get; private set; }
     public IDictionary<string, Territory> Territories { get; private set; }
     public IList<Action> Actions { get; private set; }
     private Random Random { get; }
@@ -14,6 +15,7 @@ public class Game {
         Players = GetOrderedPlayers(players);
         PlayerTurn = 0;
         PlayerArmies = GetPlayerArmies(players);
+        PlayerCards = new Dictionary<IPlayer, IList<Card>>();
         Territories = CreateTerritories();
         Random = new Random();
         Actions = [];
