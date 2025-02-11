@@ -5,10 +5,10 @@ public class Game {
     public int PlayerTurn { get; private set; }
     public IDictionary<IPlayer, int> PlayerArmies { get; private set; }
     public IDictionary<string, Territory> Territories { get; private set; }
-    public Random Random { get; }
     public IList<Action> Actions { get; private set; }
-    private const int MAX_ROUNDS = 200;
-    private const int MAX_PLAYER_ARMIES = 999;
+    private Random Random { get; }
+    public const int MAX_ROUNDS = 200;
+    public const int MAX_PLAYER_ARMIES = 999;
 
     public Game(IList<IPlayer> players) {
         Players = GetOrderedPlayers(players);
@@ -58,7 +58,7 @@ public class Game {
             Players[PlayerTurn].TakeTurn(this);
 
             foreach (IPlayer player in Players) {
-                if (player.NumTerritoriesOwned == 0) {
+                if (TerritoriesConquered(player, Territories).Count == 0) {
                     Players.Remove(player);
                 }
             }
@@ -317,7 +317,6 @@ public class Game {
             selection = unusedTerrNames[nameIndex];
 
             SpecialDeploy(players[currentPlayerIndex], territories[selection]);
-            players[currentPlayerIndex].NumTerritoriesOwned += 1;
             unusedTerrNames.Remove(selection);
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
@@ -358,9 +357,9 @@ public class Game {
         }
     }
 
-    private static IPlayer? GetWinner(IList<IPlayer> players) {
+    private IPlayer? GetWinner(IList<IPlayer> players) {
         foreach (IPlayer player in players) {
-            if (player.NumTerritoriesOwned == 42) {
+            if (TerritoriesConquered(player, Territories).Count == 42) {
                 return player;
             }
         }

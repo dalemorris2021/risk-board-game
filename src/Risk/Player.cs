@@ -6,14 +6,12 @@ namespace Risk;
 public class Player : IPlayer {
     public string Name { get; set; }
     public IEnumerable<Card> Cards { get; set; } = []; // Player shouldn't be able to see other players' cards
-    public int NumTerritoriesOwned { get; set; } = 0;
     public Color Color { get; set; }
     private readonly TextInfo TextInfo = new CultureInfo("en-US").TextInfo;
 
     public Player(string name, Color color) {
         Name = name;
         Cards = [];
-        NumTerritoriesOwned = 0;
         Color = color;
     }
 
@@ -21,7 +19,6 @@ public class Player : IPlayer {
         Console.WriteLine("Enter a player name: ");
         Name = Console.ReadLine() ?? throw new EndOfStreamException();
         Cards = [];
-        NumTerritoriesOwned = 0;
         Color = color;
     }
 

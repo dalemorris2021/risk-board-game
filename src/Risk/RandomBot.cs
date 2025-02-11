@@ -5,7 +5,6 @@ namespace Risk;
 public class RandomBot(string name) : IPlayer {
     public string Name { get; set; } = name;
     public IEnumerable<Card> Cards { get; set; } = [];
-    public int NumTerritoriesOwned { get; set; }
     public Color Color { get; set; }
     private readonly Random random = new Random();
 
