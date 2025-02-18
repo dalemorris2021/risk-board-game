@@ -12,13 +12,13 @@ public class Game {
     public const int MAX_PLAYER_ARMIES = 999;
 
     public Game(IList<IPlayer> players) {
-        Players = GetOrderedPlayers(players);
+        Actions = [];
+        Random = new Random();
         PlayerTurn = 0;
-        PlayerArmies = GetPlayerArmies(players);
         PlayerCards = new Dictionary<IPlayer, IList<Card>>();
         Territories = CreateTerritories();
-        Random = new Random();
-        Actions = [];
+        Players = GetOrderedPlayers(players);
+        PlayerArmies = GetPlayerArmies(Players);
     }
 
     public void Run() {
@@ -79,7 +79,7 @@ public class Game {
             terrCounts.Add(TerritoriesConquered(player, Territories).Count);
         }
 
-        winner = Players[terrCounts.IndexOf(terrCounts.Max())];
+        winner ??= Players[terrCounts.IndexOf(terrCounts.Max())];
 
         Console.WriteLine("The game has been decided!");
         Console.WriteLine($"The winner is {winner.Name}!");
@@ -249,7 +249,7 @@ public class Game {
         };
         
         foreach (IPlayer player in players) {
-            PlayerArmies.Add(player, numArmies);
+            playerArmies.Add(player, numArmies);
         }
 
         return playerArmies;
@@ -382,7 +382,6 @@ public class Game {
 
         List<int> attackRolls = [];
         List<int> defendRolls = [];
-        Console.WriteLine($"numArmies = {attackTerr.NumArmies}");
         if (attackTerr.NumArmies >= 4) {
             for (int i = 0; i < 3; i++) {
                 attackRolls.Add(GetDieRoll());

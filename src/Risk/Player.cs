@@ -71,7 +71,11 @@ public class Player : IPlayer {
 
     private void DeployArmies(Game game) {
         while (game.PlayerArmies[this] != 0) {
-            Console.WriteLine($"{Name}, select a territory to place an army");
+            Console.WriteLine($"{Name}, select one of your territories to place an army.");
+            foreach (Territory terr in game.TerritoriesConquered(this, game.Territories)) {
+                Console.WriteLine($"* {terr.Name}");
+            }
+
             string input = InputHandler.GetInput();
             string terrName = TextInfo.ToTitleCase(input);
 
@@ -80,7 +84,7 @@ public class Player : IPlayer {
             } else if (this != game.Territories[terrName].Player) {
                 Console.WriteLine("Not your territory!");
             } else {
-                Console.WriteLine($"You have {game.PlayerArmies[this]} to deploy.");
+                Console.WriteLine($"How many armies would you like to deploy? ({game.PlayerArmies[this]} available)");
                 input = InputHandler.GetInput();
                 int numArmies;
                 if (Int32.TryParse(input, out numArmies)) {
@@ -132,7 +136,8 @@ public class Player : IPlayer {
     }
 
     private void Fortify(Game game) {
-        while (true) {
+        bool isFortifying = true;
+        while (isFortifying) {
             Console.WriteLine($"{Name}, select a territory to move armies from.");
             string input = InputHandler.GetInput();
             string fromTerrName = TextInfo.ToTitleCase(input);
@@ -145,6 +150,7 @@ public class Player : IPlayer {
                 Console.WriteLine("Invalid! Try again.");
             } else if (this == game.Territories[fromTerrName].Player && this == game.Territories[toTerrName].Player) {
                 PlaceArmyFortify(game, game.Territories[fromTerrName], game.Territories[toTerrName]);
+                isFortifying = false;
             } else {
                 Console.WriteLine("You must select territories you own!");
             }

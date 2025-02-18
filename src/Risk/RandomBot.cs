@@ -2,9 +2,9 @@ using System.Drawing;
 
 namespace Risk;
 
-public class RandomBot(string name) : IPlayer {
+public class RandomBot(string name, Color color) : IPlayer {
     public string Name { get; set; } = name;
-    public Color Color { get; set; }
+    public Color Color { get; set; } = color;
     private readonly Random random = new Random();
 
     public void TakeTurn(Game game) {
