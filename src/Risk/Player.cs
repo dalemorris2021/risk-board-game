@@ -5,35 +5,18 @@ namespace Risk;
 
 public class Player : IPlayer {
     public string Name { get; set; }
-    public IEnumerable<Card> Cards { get; set; } = []; // Player shouldn't be able to see other players' cards
-    public int NumArmies { get; private set; } = 0;
-    public int NumTerritoriesOwned { get; set; } = 0;
     public Color Color { get; set; }
     private readonly TextInfo TextInfo = new CultureInfo("en-US").TextInfo;
 
     public Player(string name, Color color) {
         Name = name;
-        Cards = [];
-        NumArmies = 0;
-        NumTerritoriesOwned = 0;
         Color = color;
     }
 
     public Player(Color color) {
         Console.WriteLine("Enter a player name: ");
         Name = Console.ReadLine() ?? throw new EndOfStreamException();
-        Cards = [];
-        NumArmies = 0;
-        NumTerritoriesOwned = 0;
         Color = color;
-    }
-
-    public void AddArmies(int numArmies) {
-        NumArmies = Math.Min(IPlayer.MAX_ARMIES, NumArmies + numArmies);
-    }
-
-    public void SubArmies(int numArmies) {
-        NumArmies = Math.Max(0, NumArmies - numArmies);
     }
 
     public void TakeTurn(Game game) {
@@ -41,7 +24,7 @@ public class Player : IPlayer {
         string answer;
 
         Console.WriteLine($"{Name}'s turn!");
-        if (NumArmies > 0) { // Where does NumArmies get set?
+        if (game.PlayerArmies[this] > 0) { // Where does NumArmies get set?
             Console.WriteLine("Deploy armies!");
             DeployArmies(game);
         }
@@ -87,8 +70,12 @@ public class Player : IPlayer {
     }
 
     private void DeployArmies(Game game) {
-        while (NumArmies != 0) {
-            Console.WriteLine($"{Name}, select a territory to place an army");
+        while (game.PlayerArmies[this] != 0) {
+            Console.WriteLine($"{Name}, select one of your territories to place an army.");
+            foreach (Territory terr in game.TerritoriesConquered(this, game.Territories)) {
+                Console.WriteLine($"* {terr.Name}");
+            }
+
             string input = InputHandler.GetInput();
             string terrName = TextInfo.ToTitleCase(input);
 
@@ -97,7 +84,7 @@ public class Player : IPlayer {
             } else if (this != game.Territories[terrName].Player) {
                 Console.WriteLine("Not your territory!");
             } else {
-                Console.WriteLine($"You have {NumArmies} to deploy.");
+                Console.WriteLine($"How many armies would you like to deploy? ({game.PlayerArmies[this]} available)");
                 input = InputHandler.GetInput();
                 int numArmies;
                 if (Int32.TryParse(input, out numArmies)) {
@@ -149,7 +136,8 @@ public class Player : IPlayer {
     }
 
     private void Fortify(Game game) {
-        while (true) {
+        bool isFortifying = true;
+        while (isFortifying) {
             Console.WriteLine($"{Name}, select a territory to move armies from.");
             string input = InputHandler.GetInput();
             string fromTerrName = TextInfo.ToTitleCase(input);
@@ -162,6 +150,7 @@ public class Player : IPlayer {
                 Console.WriteLine("Invalid! Try again.");
             } else if (this == game.Territories[fromTerrName].Player && this == game.Territories[toTerrName].Player) {
                 PlaceArmyFortify(game, game.Territories[fromTerrName], game.Territories[toTerrName]);
+                isFortifying = false;
             } else {
                 Console.WriteLine("You must select territories you own!");
             }
