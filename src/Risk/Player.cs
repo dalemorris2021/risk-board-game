@@ -32,8 +32,12 @@ public class Player : IPlayer {
         bool isAttacking = true;
         do {
             Console.WriteLine("Will you attack? (Y/N)"); // Should notify player when they can no longer attack
-            input = TextInfo.ToTitleCase(InputHandler.GetInput());
+            input = InputHandler.GetInput();
             answer = TextInfo.ToTitleCase(input);
+            if (answer == "Info") {
+                PrintInfo(game);
+                continue;
+            }
 
             switch (answer) {
             case "Y":
@@ -53,6 +57,10 @@ public class Player : IPlayer {
             Console.WriteLine("Will you fortify? (Y/N)");
             input = InputHandler.GetInput();
             answer = TextInfo.ToTitleCase(input);
+            if (answer == "Info") {
+                PrintInfo(game);
+                continue;
+            }
 
             switch (answer) {
             case "Y":
@@ -78,14 +86,26 @@ public class Player : IPlayer {
 
             string input = InputHandler.GetInput();
             string terrName = TextInfo.ToTitleCase(input);
+            if (terrName == "Info") {
+                PrintInfo(game);
+                continue;
+            }
 
             if (!game.Territories.ContainsKey(terrName)) {
                 Console.WriteLine("Invalid! Try again.");
             } else if (this != game.Territories[terrName].Player) {
                 Console.WriteLine("Not your territory!");
             } else {
-                Console.WriteLine($"How many armies would you like to deploy? ({game.PlayerArmies[this]} available)");
-                input = InputHandler.GetInput();
+                while (true) {
+                    Console.WriteLine($"How many armies would you like to deploy? ({game.PlayerArmies[this]} available)");
+                    input = TextInfo.ToTitleCase(InputHandler.GetInput());
+                    if (input == "Info") {
+                        PrintInfo(game);
+                        continue;
+                    }
+                    break;
+                }
+
                 int numArmies;
                 if (Int32.TryParse(input, out numArmies)) {
                     game.Deploy(this, game.Territories[terrName], numArmies);
@@ -98,9 +118,18 @@ public class Player : IPlayer {
     }
 
     public void Attack(Game game) {
-        Console.WriteLine($"{Name}, what territory will you attack?");
-        string input = InputHandler.GetInput();
-        string defendTerrName = TextInfo.ToTitleCase(input);
+        string input;
+        string defendTerrName;
+        while (true) {
+            Console.WriteLine($"{Name}, what territory will you attack?");
+            input = InputHandler.GetInput();
+            defendTerrName = TextInfo.ToTitleCase(input);
+            if (defendTerrName == "Info") {
+                PrintInfo(game);
+                continue;
+            }
+            break;
+        }
 
         if (!game.Territories.ContainsKey(defendTerrName)) {
             Console.WriteLine("Invalid territory!");
@@ -109,9 +138,17 @@ public class Player : IPlayer {
             return;
         }
 
-        Console.WriteLine($"{Name}, what territory will you attack from?");
-        input = InputHandler.GetInput();
-        string attackTerrName = TextInfo.ToTitleCase(input);
+        string attackTerrName;
+        while (true) {
+            Console.WriteLine($"{Name}, what territory will you attack from?");
+            input = InputHandler.GetInput();
+            attackTerrName = TextInfo.ToTitleCase(input);
+            if (attackTerrName == "Info") {
+                PrintInfo(game);
+                continue;
+            }
+            break;
+        }
 
         if (!game.Territories.ContainsKey(attackTerrName)) {
             Console.WriteLine("Invalid territory!");
@@ -141,10 +178,22 @@ public class Player : IPlayer {
             Console.WriteLine($"{Name}, select a territory to move armies from.");
             string input = InputHandler.GetInput();
             string fromTerrName = TextInfo.ToTitleCase(input);
+            if (fromTerrName == "Info") {
+                PrintInfo(game);
+                continue;
+            }
 
-            Console.WriteLine("Select a territory to place armies.");
-            input = InputHandler.GetInput();
-            string toTerrName = TextInfo.ToTitleCase(input);
+            string toTerrName;
+            while (true) {
+                Console.WriteLine("Select a territory to place armies.");
+                input = InputHandler.GetInput();
+                toTerrName = TextInfo.ToTitleCase(input);
+                if (toTerrName == "Info") {
+                    PrintInfo(game);
+                    continue;
+                }
+                break;
+            }
 
             if (!game.Territories.ContainsKey(fromTerrName) || !game.Territories.ContainsKey(toTerrName)) {
                 Console.WriteLine("Invalid! Try again.");
@@ -167,9 +216,18 @@ public class Player : IPlayer {
         
         int numArmies;
         while (true) {
-            Console.WriteLine($"There are {from.NumArmies - 1} armies available to move.");
-            Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
-            string input = InputHandler.GetInput();
+            string input;
+            while (true) {
+                Console.WriteLine($"There are {from.NumArmies - 1} armies available to move.");
+                Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
+                input = InputHandler.GetInput();
+                if (input == "Info") {
+                    PrintInfo(game);
+                    continue;
+                }
+                break;
+            }
+
             if (!Int32.TryParse(input, out numArmies)) {
                 Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
             } else if (numArmies < from.NumArmies) {
@@ -178,5 +236,14 @@ public class Player : IPlayer {
         }
 
         game.Fortify(numArmies, from, to);
+    }
+
+    private void PrintInfo(Game game) {
+        foreach (IPlayer player in game.Players) {
+            Console.WriteLine(player.Name);
+            foreach (Territory terr in game.TerritoriesConquered(player, game.Territories)) {
+                Console.WriteLine($"* {terr.Name} ({terr.NumArmies})");
+            }
+        }
     }
 }

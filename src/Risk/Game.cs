@@ -59,9 +59,10 @@ public class Game {
             
             Players[PlayerTurn].TakeTurn(this);
 
-            foreach (IPlayer player in Players) {
-                if (TerritoriesConquered(player, Territories).Count == 0) {
-                    Players.Remove(player);
+            // Iterate backwards so subsequent elements don't change index
+            for (int i = Players.Count - 1; i >= 0; i--) {
+                if (TerritoriesConquered(Players[i], Territories).Count == 0) {
+                    Players.Remove(Players[i]);
                 }
             }
 
@@ -90,8 +91,8 @@ public class Game {
         Territory northwestTerritory = new("Northwest Territory", "North America");
         Territory alberta = new("Alberta", "North America");
         Territory ontario = new("Ontario", "North America");
-        Territory westernUS = new("Western US", "North America");
-        Territory easternUS = new("Eastern US", "North America");
+        Territory westernUS = new("Western Us", "North America");
+        Territory easternUS = new("Eastern Us", "North America");
         Territory centralAmerica = new("Central America", "North America");
         Territory quebec = new("Quebec", "North America");
         Territory greenland = new("Greenland", "North America");
