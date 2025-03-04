@@ -66,6 +66,7 @@ public class Player : IPlayer {
             case "Y":
                 Console.WriteLine("Fortify!");
                 Fortify(game);
+                isFortifying = false;
                 break;
             case "N":
                 isFortifying = false;
