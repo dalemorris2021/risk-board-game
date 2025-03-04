@@ -514,4 +514,18 @@ public class Game {
 
         Actions = [];
     }
+
+    public IList<Territory> GetAttackableTerritories(IPlayer player, IDictionary<string, Territory> terrs) {
+        IList<Territory> attackableTerrs = [];
+        foreach (Territory terr in TerritoriesConquered(player, terrs)) {
+            IList<Territory> neighbors = terr.Neighbors;
+            foreach (Territory neighbor in neighbors) {
+                if (neighbor.Player != player && !attackableTerrs.Contains(neighbor)) {
+                    attackableTerrs.Add(neighbor);
+                }
+            }
+        }
+
+        return attackableTerrs;
+    }
 }

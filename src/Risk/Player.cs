@@ -31,7 +31,7 @@ public class Player : IPlayer {
 
         bool isAttacking = true;
         do {
-            Console.WriteLine("Will you attack? (Y/N)"); // Should notify player when they can no longer attack
+            Console.WriteLine("Will you attack? (Y/N) (type \"info\")"); // Should notify player when they can no longer attack
             input = InputHandler.GetInput();
             answer = TextInfo.ToTitleCase(input);
             if (answer == "Info") {
@@ -54,7 +54,7 @@ public class Player : IPlayer {
 
         bool isFortifying = true;
         do {
-            Console.WriteLine("Will you fortify? (Y/N)");
+            Console.WriteLine("Will you fortify? (Y/N) (type \"info\")");
             input = InputHandler.GetInput();
             answer = TextInfo.ToTitleCase(input);
             if (answer == "Info") {
@@ -80,7 +80,7 @@ public class Player : IPlayer {
 
     private void DeployArmies(Game game) {
         while (game.PlayerArmies[this] != 0) {
-            Console.WriteLine($"{Name}, select one of your territories to place an army.");
+            Console.WriteLine($"{Name}, select one of your territories to place an army. (type \"info\")");
             foreach (Territory terr in game.TerritoriesConquered(this, game.Territories)) {
                 Console.WriteLine($"* {terr.Name}");
             }
@@ -98,7 +98,7 @@ public class Player : IPlayer {
                 Console.WriteLine("Not your territory!");
             } else {
                 while (true) {
-                    Console.WriteLine($"How many armies would you like to deploy? ({game.PlayerArmies[this]} available)");
+                    Console.WriteLine($"How many armies would you like to deploy? ({game.PlayerArmies[this]} available) (type \"info\")");
                     input = TextInfo.ToTitleCase(InputHandler.GetInput());
                     if (input == "Info") {
                         PrintInfo(game);
@@ -122,7 +122,11 @@ public class Player : IPlayer {
         string input;
         string defendTerrName;
         while (true) {
-            Console.WriteLine($"{Name}, what territory will you attack?");
+            Console.WriteLine($"{Name}, what territory will you attack? (type \"info\")");
+            Console.WriteLine("Attackable territories:");
+            foreach(Territory terr in game.GetAttackableTerritories(this, game.Territories)) {
+                Console.WriteLine($"* {terr.Name}");
+            }
             input = InputHandler.GetInput();
             defendTerrName = TextInfo.ToTitleCase(input);
             if (defendTerrName == "Info") {
@@ -141,7 +145,7 @@ public class Player : IPlayer {
 
         string attackTerrName;
         while (true) {
-            Console.WriteLine($"{Name}, what territory will you attack from?");
+            Console.WriteLine($"{Name}, what territory will you attack from? (type \"info\")");
             input = InputHandler.GetInput();
             attackTerrName = TextInfo.ToTitleCase(input);
             if (attackTerrName == "Info") {
@@ -176,7 +180,7 @@ public class Player : IPlayer {
     private void Fortify(Game game) {
         bool isFortifying = true;
         while (isFortifying) {
-            Console.WriteLine($"{Name}, select a territory to move armies from.");
+            Console.WriteLine($"{Name}, select a territory to move armies from. (type \"info\")");
             string input = InputHandler.GetInput();
             string fromTerrName = TextInfo.ToTitleCase(input);
             if (fromTerrName == "Info") {
@@ -186,7 +190,7 @@ public class Player : IPlayer {
 
             string toTerrName;
             while (true) {
-                Console.WriteLine("Select a territory to place armies.");
+                Console.WriteLine("Select a territory to place armies. (type \"info\")");
                 input = InputHandler.GetInput();
                 toTerrName = TextInfo.ToTitleCase(input);
                 if (toTerrName == "Info") {
@@ -219,7 +223,7 @@ public class Player : IPlayer {
         while (true) {
             string input;
             while (true) {
-                Console.WriteLine($"There are {from.NumArmies - 1} armies available to move.");
+                Console.WriteLine($"There are {from.NumArmies - 1} armies available to move. (type \"info\")");
                 Console.WriteLine(ENTER_NUM_ARMIES_MESSAGE);
                 input = InputHandler.GetInput();
                 if (input == "Info") {
@@ -240,11 +244,18 @@ public class Player : IPlayer {
     }
 
     private void PrintInfo(Game game) {
+        Console.WriteLine();
+        Console.WriteLine("================================");
+        Console.WriteLine("INFO");
+        Console.WriteLine();
         foreach (IPlayer player in game.Players) {
             Console.WriteLine(player.Name);
             foreach (Territory terr in game.TerritoriesConquered(player, game.Territories)) {
                 Console.WriteLine($"* {terr.Name} ({terr.NumArmies})");
             }
+            Console.WriteLine();
         }
+        Console.WriteLine("================================");
+        Console.WriteLine();
     }
 }
