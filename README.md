@@ -39,16 +39,14 @@ To run the project, run the following command:
 
 ## Testing the Project
 
-### Testing Platform
-
-Project testing has been automated using the .NET xUnit framework.
-
-### Running Tests
-
 To run the project tests, run the following command:
 ```sh
 ./test.sh
 ```
+
+### Testing Platform
+
+Project testing has been automated using the .NET xUnit framework.
 
 ### Test Cases
 
