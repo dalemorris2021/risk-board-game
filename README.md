@@ -50,7 +50,7 @@ Project testing has been automated using the .NET xUnit framework.
 
 ### Test Cases
 
-The following is a list of test cases that the project currently runs. For a more detailed overview, see src/Risk.Tests.
+The following is a list of test cases that the project currently runs automatically. For a review of manual tests, see the [Test Cases Report](docs/test-cases-report.pdf) and the [Test Summary Report](docs/test-summary-report.pdf).
 
 * Game can run with 2 bots
 * Game can run with 6 bots
