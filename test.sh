@@ -1,1 +1,3 @@
-dotnet test ./Risk.Tests
+#!/bin/bash
+
+dotnet test
