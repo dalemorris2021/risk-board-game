@@ -54,3 +54,5 @@ The following is a list of test cases that the project currently runs. For a mor
 
 * Game can run with 2 bots
 * Game can run with 6 bots
+* InputHandler returns expected string
+* InputHandler throws exception at end of file
