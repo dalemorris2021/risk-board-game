@@ -69,13 +69,7 @@ public class Game
 
             Players[PlayerTurn].TakeTurn(this);
 
-            foreach (IPlayer player in Players)
-            {
-                if (TerritoriesConquered(player, Territories).Count == 0)
-                {
-                    Players.Remove(player);
-                }
-            }
+            Players = Players.Where(player => TerritoriesConquered(player, Territories).Count != 0).ToList();
 
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
             turns++;
