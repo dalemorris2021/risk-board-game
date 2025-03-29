@@ -1,17 +1,19 @@
 namespace Risk;
 
-public class Game {
+public class Game
+{
     public IList<IPlayer> Players { get; private set; }
     public int PlayerTurn { get; private set; }
     public IDictionary<IPlayer, int> PlayerArmies { get; private set; }
     public IDictionary<IPlayer, IList<Card>> PlayerCards { get; private set; }
     public IDictionary<string, Territory> Territories { get; private set; }
     public IList<Action> Actions { get; private set; }
-    private Random Random { get; }
     public const int MAX_ROUNDS = 200;
     public const int MAX_PLAYER_ARMIES = 999;
+    private Random Random { get; }
 
-    public Game(IList<IPlayer> players) {
+    public Game(IList<IPlayer> players)
+    {
         Actions = [];
         Random = new Random();
         PlayerTurn = 0;
@@ -21,22 +23,26 @@ public class Game {
         PlayerArmies = GetPlayerArmies(Players);
     }
 
-    public void Run() {
+    public void Run()
+    {
         int numStartingArmies = PlayerArmies[Players[0]];
         Console.WriteLine($"Each player will start with {numStartingArmies} armies.");
 
         Console.WriteLine("The order of play will be randomized.");
 
         Console.WriteLine("Players:");
-        foreach (IPlayer player in Players) {
+        foreach (IPlayer player in Players)
+        {
             Console.WriteLine(player.Name);
         }
         Console.WriteLine();
-        
+
         DistributeTerritories(Players, Territories);
-        foreach (IPlayer player in Players) {
+        foreach (IPlayer player in Players)
+        {
             Console.WriteLine(player.Name);
-            foreach (Territory terr in TerritoriesConquered(player, Territories)) {
+            foreach (Territory terr in TerritoriesConquered(player, Territories))
+            {
                 Console.WriteLine($"* {terr.Name}");
             }
             Console.WriteLine();
@@ -48,19 +54,25 @@ public class Game {
         IPlayer? winner;
         int turns = 0;
         int maxTurns = MAX_ROUNDS * Players.Count;
-        while ((winner = GetWinner(Players)) == null) {
+        while ((winner = GetWinner(Players)) == null)
+        {
             PlayerAddArmies(Players[PlayerTurn], TerritoriesConquered(Players[PlayerTurn], Territories).Count / 3);
 
-            if (PlayerArmies[Players[PlayerTurn]] > 0) {
+            if (PlayerArmies[Players[PlayerTurn]] > 0)
+            {
                 Actions = [Action.DEPLOY];
-            } else {
+            }
+            else
+            {
                 Actions = [Action.ATTACK, Action.FORTIFY];
             }
-            
+
             Players[PlayerTurn].TakeTurn(this);
 
-            foreach (IPlayer player in Players) {
-                if (TerritoriesConquered(player, Territories).Count == 0) {
+            foreach (IPlayer player in Players)
+            {
+                if (TerritoriesConquered(player, Territories).Count == 0)
+                {
                     Players.Remove(player);
                 }
             }
@@ -68,13 +80,15 @@ public class Game {
             PlayerTurn = (PlayerTurn + 1) % Players.Count;
             turns++;
 
-            if (turns >= maxTurns) {
+            if (turns >= maxTurns)
+            {
                 break;
             }
         }
 
         IList<int> terrCounts = [];
-        for (int i = 0; i < Players.Count; i++) {
+        for (int i = 0; i < Players.Count; i++)
+        {
             IPlayer player = Players[i];
             terrCounts.Add(TerritoriesConquered(player, Territories).Count);
         }
@@ -85,7 +99,174 @@ public class Game {
         Console.WriteLine($"The winner is {winner.Name}!");
     }
 
-    private static IDictionary<string, Territory> CreateTerritories() {
+    public void Attack(Territory attackTerr, Territory defendTerr,
+            IPlayer attackPlayer, IPlayer defendPlayer)
+    {
+        if (!Actions.Contains(Action.ATTACK)
+            || !Territories.ContainsKey(defendTerr.Name)
+            || attackPlayer == Territories[defendTerr.Name].Player
+            || !Territories.ContainsKey(attackTerr.Name)
+            || Territories[attackTerr.Name].NumArmies <= 1
+            || !Territories[defendTerr.Name].IsNeighbor(Territories[attackTerr.Name]))
+        {
+            return;
+        }
+
+        List<int> attackRolls = [];
+        List<int> defendRolls = [];
+        if (attackTerr.NumArmies >= 4)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                attackRolls.Add(GetDieRoll());
+            }
+        }
+        else if (attackTerr.NumArmies == 3)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                attackRolls.Add(GetDieRoll());
+            }
+        }
+        else if (attackTerr.NumArmies == 2)
+        {
+            attackRolls.Add(GetDieRoll());
+        }
+        else
+        {
+            return;
+        }
+        attackRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
+
+        if (attackRolls.Count == 1)
+        {
+            defendRolls.Add(GetDieRoll());
+        }
+        else
+        {
+            if (defendTerr.NumArmies >= 2)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    defendRolls.Add(GetDieRoll());
+                }
+            }
+            else
+            {
+                defendRolls.Add(GetDieRoll());
+            }
+        }
+
+        defendRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
+
+        if (defendRolls.Count == 2)
+        {
+            if (attackRolls[0] > defendRolls[0] && attackRolls[1] > defendRolls[1])
+            {
+                defendTerr.SubArmies(2);
+                Console.WriteLine("Defending territory lost 2 army!");
+            }
+            else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] <= defendRolls[1])
+            {
+                attackTerr.SubArmies(2);
+                Console.WriteLine("Attacking territory lost 2 army!");
+            }
+            else if (attackRolls[0] > defendRolls[0] && attackRolls[1] <= defendRolls[1])
+            {
+                attackTerr.SubArmies(1);
+                defendTerr.SubArmies(1);
+                Console.WriteLine("Both territories lost 1 army!");
+            }
+            else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] > defendRolls[1])
+            {
+                attackTerr.SubArmies(1);
+                defendTerr.SubArmies(1);
+                Console.WriteLine("Both territories lost 1 army!");
+            }
+        }
+        else if (defendRolls.Count == 1)
+        {
+            if (attackRolls[0] > defendRolls[0])
+            {
+                defendTerr.SubArmies(1);
+                Console.WriteLine("Defending territory lost 1 army!");
+            }
+            else if (attackRolls[0] <= defendRolls[0])
+            {
+                attackTerr.SubArmies(1);
+                Console.WriteLine("Attacking territory lost 1 army!");
+            }
+        }
+
+        if (defendTerr.NumArmies == 0)
+        {
+            PlaceArmyWinner(attackPlayer, defendTerr, attackTerr.NumArmies - 1);
+            Console.WriteLine($"{attackPlayer.Name} has won the territory! Your armies now occupy it.");
+        }
+        else if (attackTerr.NumArmies == 1)
+        {
+            Console.WriteLine($"{defendPlayer.Name} has retained the territory!");
+        }
+    }
+
+    public void Deploy(IPlayer player, Territory terr, int numArmies = 1)
+    {
+        if (!Actions.Contains(Action.DEPLOY)
+            || !Territories.ContainsKey(terr.Name)
+            || player != terr.Player)
+        { // Players shouldn't be able to call this directly if they don't own the territory
+            return;
+        }
+
+        if (terr.Player == null)
+        {
+            terr.Player = player;
+        }
+
+        if (PlayerArmies[player] >= numArmies)
+        {
+            terr.AddArmies(numArmies);
+            PlayerSubArmies(player, numArmies);
+        }
+
+        if (PlayerArmies[player] == 0)
+        {
+            Actions = [Action.ATTACK, Action.FORTIFY];
+        }
+    }
+
+    public void Fortify(int numArmies, Territory from, Territory to)
+    {
+        if (!Actions.Contains(Action.FORTIFY)
+            || !Territories.ContainsKey(from.Name) || !Territories.ContainsKey(to.Name)
+            || !(this == Territories[from.Name].Player) || !(this == Territories[to.Name].Player)
+            || numArmies >= from.NumArmies)
+        {
+            return;
+        }
+
+        to.AddArmies(numArmies);
+        from.SubArmies(numArmies);
+
+        Actions = [];
+    }
+
+    public IList<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict)
+    {
+        IList<Territory> territories = [];
+        foreach (Territory terr in terrsDict.Values)
+        {
+            if (player == terr.Player)
+            {
+                territories.Add(terr);
+            }
+        }
+
+        return territories;
+    }
+
+    private static IDictionary<string, Territory> CreateTerritories()
+    {
         Territory alaska = new("Alaska", "North America");
         Territory northwestTerritory = new("Northwest Territory", "North America");
         Territory alberta = new("Alberta", "North America");
@@ -223,23 +404,27 @@ public class Game {
                 [750, 300], [600, 325], [675, 350], [750, 375], [850, 225], [200, 375], [200, 450], [275, 450],
                 [200, 525], [425, 425], [500, 425], [500, 500], [425, 500], [500, 575], [575, 575], [825, 450],
                 [900, 450], [825, 525], [900, 525]];
-        
-        for (int i = 0; i < terrs.Count; i++) {
+
+        for (int i = 0; i < terrs.Count; i++)
+        {
             terrs[i].Coordinates = coordinates[i];
         }
 
         var terrsDict = new Dictionary<string, Territory>();
-        foreach (Territory terr in terrs) {
+        foreach (Territory terr in terrs)
+        {
             terrsDict.Add(terr.Name, terr);
         }
 
         return terrsDict;
     }
 
-    private IDictionary<IPlayer, int> GetPlayerArmies(IList<IPlayer> players) {
+    private IDictionary<IPlayer, int> GetPlayerArmies(IList<IPlayer> players)
+    {
         IDictionary<IPlayer, int> playerArmies = new Dictionary<IPlayer, int>();
 
-        int numArmies = players.Count switch {
+        int numArmies = players.Count switch
+        {
             2 => 40,
             3 => 35,
             4 => 30,
@@ -247,37 +432,44 @@ public class Game {
             6 => 20,
             _ => throw new ArgumentException("Players should have length between 2 and 6."),
         };
-        
-        foreach (IPlayer player in players) {
+
+        foreach (IPlayer player in players)
+        {
             playerArmies.Add(player, numArmies);
         }
 
         return playerArmies;
     }
 
-    private void PlayerAddArmies(IPlayer player, int numArmies) {
+    private void PlayerAddArmies(IPlayer player, int numArmies)
+    {
         PlayerArmies[player] = Math.Min(MAX_PLAYER_ARMIES, PlayerArmies[player] + numArmies);
     }
 
-    private void PlayerSubArmies(IPlayer player, int numArmies) {
+    private void PlayerSubArmies(IPlayer player, int numArmies)
+    {
         PlayerArmies[player] = Math.Max(0, PlayerArmies[player] - numArmies);
     }
 
-    private int GetDieRoll() {
+    private int GetDieRoll()
+    {
         return Random.Next(1, 7);
     }
 
-    private IList<IPlayer> GetOrderedPlayers(IList<IPlayer> players) {
+    private IList<IPlayer> GetOrderedPlayers(IList<IPlayer> players)
+    {
         int numPlayers = players.Count;
         IList<int> rolls = [];
 
-        for (int i = 0; i < numPlayers; i++) {
+        for (int i = 0; i < numPlayers; i++)
+        {
             int roll = GetDieRoll();
             rolls.Add(roll);
         }
 
         IList<IPlayer> sortedPlayers = [];
-        for (int i = 0; i < numPlayers; i++) {
+        for (int i = 0; i < numPlayers; i++)
+        {
             int maxRoll = rolls.ToArray().Max();
             sortedPlayers.Add(players[rolls.IndexOf(maxRoll)]);
             players.Remove(players[rolls.IndexOf(maxRoll)]);
@@ -308,13 +500,15 @@ public class Game {
     }
     */
 
-    private void DistributeTerritories(IList<IPlayer> players, IDictionary<string, Territory> territories) {
+    private void DistributeTerritories(IList<IPlayer> players, IDictionary<string, Territory> territories)
+    {
         IList<string> unusedTerrNames = [.. territories.Keys];
 
         int currentPlayerIndex = 0;
         string selection;
         int nameIndex;
-        while (unusedTerrNames.Count != 0) {
+        while (unusedTerrNames.Count != 0)
+        {
             nameIndex = Random.Next(unusedTerrNames.Count);
             selection = unusedTerrNames[nameIndex];
 
@@ -347,21 +541,27 @@ public class Game {
     }
     */
 
-    private void DistributeArmies(IList<IPlayer> players, IDictionary<string, Territory> territories) {
-        for (int i = 0; i < players.Count; i++) {
+    private void DistributeArmies(IList<IPlayer> players, IDictionary<string, Territory> territories)
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
             int terrIndex = 0;
             IList<Territory> playerTerrsList = TerritoriesConquered(players[i], territories);
 
-            while (PlayerArmies[players[i]] > 0) {
+            while (PlayerArmies[players[i]] > 0)
+            {
                 SpecialDeploy(players[i], playerTerrsList[terrIndex], 1);
                 terrIndex = (terrIndex + 1) % playerTerrsList.Count;
             }
         }
     }
 
-    private IPlayer? GetWinner(IList<IPlayer> players) {
-        foreach (IPlayer player in players) {
-            if (TerritoriesConquered(player, Territories).Count == 42) {
+    private IPlayer? GetWinner(IList<IPlayer> players)
+    {
+        foreach (IPlayer player in players)
+        {
+            if (TerritoriesConquered(player, Territories).Count == 42)
+            {
                 return player;
             }
         }
@@ -369,148 +569,32 @@ public class Game {
         return null;
     }
 
-    public void Attack(Territory attackTerr, Territory defendTerr,
-            IPlayer attackPlayer, IPlayer defendPlayer) {
-        if (!Actions.Contains(Action.ATTACK)
-            || !Territories.ContainsKey(defendTerr.Name)
-            || attackPlayer == Territories[defendTerr.Name].Player
-            || !Territories.ContainsKey(attackTerr.Name)
-            || Territories[attackTerr.Name].NumArmies <= 1
-            || !Territories[defendTerr.Name].IsNeighbor(Territories[attackTerr.Name])) {
-            return;
-        }
-
-        List<int> attackRolls = [];
-        List<int> defendRolls = [];
-        if (attackTerr.NumArmies >= 4) {
-            for (int i = 0; i < 3; i++) {
-                attackRolls.Add(GetDieRoll());
-            }
-        } else if (attackTerr.NumArmies == 3) {
-            for (int i = 0; i < 2; i++) {
-                attackRolls.Add(GetDieRoll());
-            }
-        } else if (attackTerr.NumArmies == 2) {
-            attackRolls.Add(GetDieRoll());
-        } else {
-            return;
-        }
-        attackRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
-
-        if (attackRolls.Count == 1) {
-            defendRolls.Add(GetDieRoll());
-        } else {
-            if (defendTerr.NumArmies >= 2) {
-                for (int i = 0; i < 2; i++) {
-                    defendRolls.Add(GetDieRoll());
-                }
-            } else {
-                defendRolls.Add(GetDieRoll());
-            }
-        }
-        
-        defendRolls.Sort((a, b) => b.CompareTo(a)); // Sorts in descending order
-
-        if (defendRolls.Count == 2) {
-            if (attackRolls[0] > defendRolls[0] && attackRolls[1] > defendRolls[1]) {
-                defendTerr.SubArmies(2);
-                Console.WriteLine("Defending territory lost 2 army!");
-            } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
-                attackTerr.SubArmies(2);
-                Console.WriteLine("Attacking territory lost 2 army!");
-            } else if (attackRolls[0] > defendRolls[0] && attackRolls[1] <= defendRolls[1]) {
-                attackTerr.SubArmies(1);
-                defendTerr.SubArmies(1);
-                Console.WriteLine("Both territories lost 1 army!");
-            } else if (attackRolls[0] <= defendRolls[0] && attackRolls[1] > defendRolls[1]) {
-                attackTerr.SubArmies(1);
-                defendTerr.SubArmies(1);
-                Console.WriteLine("Both territories lost 1 army!");
-            }
-        } else if (defendRolls.Count == 1) {
-            if (attackRolls[0] > defendRolls[0]) {
-                defendTerr.SubArmies(1);
-                Console.WriteLine("Defending territory lost 1 army!");
-            } else if (attackRolls[0] <= defendRolls[0]) {
-                attackTerr.SubArmies(1);
-                Console.WriteLine("Attacking territory lost 1 army!");
-            }
-        }
-
-        if (defendTerr.NumArmies == 0) {
-            PlaceArmyWinner(attackPlayer, defendTerr, attackTerr.NumArmies - 1);
-            Console.WriteLine($"{attackPlayer.Name} has won the territory! Your armies now occupy it.");
-        } else if (attackTerr.NumArmies == 1) {
-            Console.WriteLine($"{defendPlayer.Name} has retained the territory!");
-        }
-    }
-
-    private static void PlaceArmyWinner(IPlayer player, Territory terr, int numArmies) {
+    private static void PlaceArmyWinner(IPlayer player, Territory terr, int numArmies)
+    {
         Console.WriteLine($"{numArmies} armies have been moved to {terr.Name}!");
-        if (terr.Player != player) {
+        if (terr.Player != player)
+        {
             terr.Player = player;
         }
         terr.AddArmies(numArmies);
     }
 
-    public IList<Territory> TerritoriesConquered(IPlayer player, IDictionary<string, Territory> terrsDict) {
-        IList<Territory> territories = [];
-        foreach (Territory terr in terrsDict.Values) {
-            if (player == terr.Player) {
-                territories.Add(terr);
-            }
-        }
-
-        return territories;
-    }
-
-    private void SpecialDeploy(IPlayer player, Territory terr, int numArmies = 1) {
-        if (!Territories.ContainsKey(terr.Name)) { // Players shouldn't be able to call this directly if they don't own the territory
+    private void SpecialDeploy(IPlayer player, Territory terr, int numArmies = 1)
+    {
+        if (!Territories.ContainsKey(terr.Name))
+        { // Players shouldn't be able to call this directly if they don't own the territory
             return;
         }
 
-        if (terr.Player == null) {
+        if (terr.Player == null)
+        {
             terr.Player = player;
         }
 
-        if (PlayerArmies[player] >= numArmies) {
+        if (PlayerArmies[player] >= numArmies)
+        {
             terr.AddArmies(numArmies);
             PlayerSubArmies(player, numArmies);
         }
-    }
-
-    public void Deploy(IPlayer player, Territory terr, int numArmies = 1) {
-        if (!Actions.Contains(Action.DEPLOY)
-            || !Territories.ContainsKey(terr.Name)
-            || player != terr.Player) { // Players shouldn't be able to call this directly if they don't own the territory
-            return;
-        }
-
-        if (terr.Player == null) {
-            terr.Player = player;
-        }
-
-        if (PlayerArmies[player] >= numArmies) {
-            terr.AddArmies(numArmies);
-            PlayerSubArmies(player, numArmies);
-        }
-
-        if (PlayerArmies[player] == 0) {
-            Actions = [Action.ATTACK, Action.FORTIFY];
-        }
-    }
-
-    public void Fortify(int numArmies, Territory from, Territory to) {
-        if (!Actions.Contains(Action.FORTIFY)
-            || !Territories.ContainsKey(from.Name) || !Territories.ContainsKey(to.Name)
-            || !(this == Territories[from.Name].Player) || !(this == Territories[to.Name].Player)
-            || numArmies >= from.NumArmies) {
-            return;
-        }
-
-        to.AddArmies(numArmies);
-        from.SubArmies(numArmies);
-
-        Actions = [];
     }
 }
