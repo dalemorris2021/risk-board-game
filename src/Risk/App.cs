@@ -5,8 +5,10 @@ using System.Text;
 
 namespace Risk;
 
-public class App {
-    public static async Task Main(string[] args) {
+public class App
+{
+    public static async Task Main(string[] args)
+    {
         Console.WriteLine("Welcome to Risk!");
         Console.WriteLine("----------------");
         Console.WriteLine("Need 2 to 6 players to start.");
@@ -19,19 +21,22 @@ public class App {
         var numConnections = 4;
 
         try
-        {    
+        {
             listener.Start();
             IList<TcpClient> handlers = [];
 
-            for (int i = 0; i < numConnections; i++) {
+            for (int i = 0; i < numConnections; i++)
+            {
                 TcpClient handler = await listener.AcceptTcpClientAsync();
                 handlers.Add(handler);
             }
 
             var handlerIndex = 0;
             bool looping = true;
-            while (looping) {
-                try {
+            while (looping)
+            {
+                try
+                {
                     await using NetworkStream stream = handlers[handlerIndex].GetStream();
                     var message = $"📅 {DateTime.Now} 🕛";
                     var dateTimeBytes = Encoding.UTF8.GetBytes(message);
@@ -42,10 +47,12 @@ public class App {
                     //     Sent message: "📅 8/22/2022 9:07:17 AM 🕛"
 
                     handlerIndex += 1;
-                    if (handlerIndex >= numConnections) {
+                    if (handlerIndex >= numConnections)
+                    {
                         handlerIndex = 0;
                     }
-                } catch (InvalidOperationException)
+                }
+                catch (InvalidOperationException)
                 {
                     Console.Error.WriteLine("Client disconnected");
                     looping = false;
@@ -67,20 +74,28 @@ public class App {
         */
     }
 
-    private static int GetNumPlayers() {
+    private static int GetNumPlayers()
+    {
         const string ENTER_NUM_PLAYERS_MESSAGE = "Please enter a number between 2 and 6.";
 
         Console.WriteLine("How many players are there?");
         int numPlayers;
-        while (true) {
+        while (true)
+        {
             string input = InputHandler.GetInput();
-            if (Int32.TryParse(input, out numPlayers)) {
-                if (numPlayers < 2 || numPlayers > 6) {
+            if (Int32.TryParse(input, out numPlayers))
+            {
+                if (numPlayers < 2 || numPlayers > 6)
+                {
                     Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
-                } else {
+                }
+                else
+                {
                     break;
                 }
-            } else {
+            }
+            else
+            {
                 Console.WriteLine(ENTER_NUM_PLAYERS_MESSAGE);
             }
         }
