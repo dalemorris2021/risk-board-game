@@ -1,8 +1,10 @@
+using System.Net.Sockets;
+
 namespace Risk;
 
 public class Game
 {
-    public IList<IPlayer> Players { get; private set; }
+    public IList<TcpClient> Players { get; private set; }
     public int PlayerTurn { get; private set; }
     public IDictionary<IPlayer, int> PlayerArmies { get; private set; }
     public IDictionary<IPlayer, IList<Card>> PlayerCards { get; private set; }
@@ -12,7 +14,7 @@ public class Game
     public const int MAX_PLAYER_ARMIES = 999;
     private Random Random { get; }
 
-    public Game(IList<IPlayer> players)
+    public Game(IList<TcpClient> players)
     {
         Actions = [];
         Random = new Random();
@@ -77,6 +79,35 @@ public class Game
             if (turns >= maxTurns)
             {
                 break;
+            }
+        }
+
+        // TODO: Combine while loop below with while loop above
+        var handlerIndex = 0;
+        bool looping = true;
+        while (looping)
+        {
+            try
+            {
+                await using NetworkStream stream = handlers[handlerIndex].GetStream();
+                var message = $"📅 {DateTime.Now} 🕛";
+                var dateTimeBytes = Encoding.UTF8.GetBytes(message);
+                await stream.WriteAsync(dateTimeBytes);
+
+                Console.WriteLine($"Sent message: \"{message}\"");
+                // Sample output:
+                //     Sent message: "📅 8/22/2022 9:07:17 AM 🕛"
+
+                handlerIndex += 1;
+                if (handlerIndex >= numPlayers)
+                {
+                    handlerIndex = 0;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                Console.Error.WriteLine("Client disconnected");
+                looping = false;
             }
         }
 
