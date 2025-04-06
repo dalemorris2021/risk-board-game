@@ -1,12 +1,14 @@
-using System.Drawing;
-
 namespace Risk;
 
-public class NeutralBot(Color color) : IPlayer {
-    public string Name { get; set; } = "Neutral";
-    public Color Color { get; set; } = color;
+public class NeutralBot : IPlayer
+{
+    public Action ReceiveAction()
+    {
+        return Action.END;
+    }
 
-    public void TakeTurn(Game game) {
-        return;
+    public void SendActions(IList<Action> actions)
+    {
+
     }
 }
