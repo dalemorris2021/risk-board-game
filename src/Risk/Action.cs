@@ -1,7 +1,9 @@
 namespace Risk;
 
-public enum Action {
+public enum Action
+{
     DEPLOY,
     ATTACK,
     FORTIFY,
+    END,
 }
