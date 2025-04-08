@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Risk;
 
-public class Player
+public class Player : IPlayer
 {
     private TcpClient client;
 

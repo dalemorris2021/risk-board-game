@@ -2,13 +2,13 @@ namespace Risk;
 
 public class NeutralBot : IPlayer
 {
-    public Action ReceiveAction()
+    public async Task<Action?> ReceiveAction()
     {
-        return Action.END;
+        return await Task.FromResult(Action.END);
     }
 
-    public void SendActions(IList<Action> actions)
+    public Task SendActions(IList<Action> actions)
     {
-
+        return Task.FromResult(0);
     }
 }
