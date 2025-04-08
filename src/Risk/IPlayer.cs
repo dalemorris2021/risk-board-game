@@ -2,6 +2,6 @@ namespace Risk;
 
 public interface IPlayer
 {
-    void SendActions(IList<Action> actions);
-    Action ReceiveAction();
+    Task SendActions(IList<Action> actions);
+    Task<Action?> ReceiveAction();
 }
