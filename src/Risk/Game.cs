@@ -4,7 +4,7 @@ namespace Risk;
 
 public class Game
 {
-    public IList<TcpClient> Players { get; private set; }
+    public IList<IPlayer> Players { get; private set; }
     public int PlayerTurn { get; private set; }
     public IDictionary<IPlayer, int> PlayerArmies { get; private set; }
     public IDictionary<IPlayer, IList<Card>> PlayerCards { get; private set; }
@@ -14,7 +14,7 @@ public class Game
     public const int MAX_PLAYER_ARMIES = 999;
     private Random Random { get; }
 
-    public Game(IList<TcpClient> players)
+    public Game(IList<IPlayer> players)
     {
         Actions = [];
         Random = new Random();
@@ -27,31 +27,14 @@ public class Game
 
     public void Run()
     {
+        Console.WriteLine("GAME START");
+        Console.WriteLine("----------");
+
         int numStartingArmies = PlayerArmies[Players[0]];
-        Console.WriteLine($"Each player will start with {numStartingArmies} armies.");
-
-        Console.WriteLine("The order of play will be randomized.");
-
-        Console.WriteLine("Players:");
-        foreach (IPlayer player in Players)
-        {
-            Console.WriteLine(player.Name);
-        }
-        Console.WriteLine();
 
         DistributeTerritories(Players, Territories);
-        foreach (IPlayer player in Players)
-        {
-            Console.WriteLine(player.Name);
-            foreach (Territory terr in TerritoriesConquered(player, Territories))
-            {
-                Console.WriteLine($"* {terr.Name}");
-            }
-            Console.WriteLine();
-        }
 
         DistributeArmies(Players, Territories);
-        Console.WriteLine("The armies have been evenly distributed.");
 
         IPlayer? winner;
         int turns = 0;
@@ -69,7 +52,14 @@ public class Game
                 Actions = [Action.ATTACK, Action.FORTIFY];
             }
 
-            Players[PlayerTurn].TakeTurn(this);
+            try
+            {
+                Players[PlayerTurn].SendActions(Actions);
+            }
+            catch (InvalidOperationException)
+            {
+                Console.Error.WriteLine("Client disconnected");
+            }
 
             Players = Players.Where(player => TerritoriesConquered(player, Territories).Count != 0).ToList();
 
@@ -82,35 +72,6 @@ public class Game
             }
         }
 
-        // TODO: Combine while loop below with while loop above
-        var handlerIndex = 0;
-        bool looping = true;
-        while (looping)
-        {
-            try
-            {
-                await using NetworkStream stream = handlers[handlerIndex].GetStream();
-                var message = $"📅 {DateTime.Now} 🕛";
-                var dateTimeBytes = Encoding.UTF8.GetBytes(message);
-                await stream.WriteAsync(dateTimeBytes);
-
-                Console.WriteLine($"Sent message: \"{message}\"");
-                // Sample output:
-                //     Sent message: "📅 8/22/2022 9:07:17 AM 🕛"
-
-                handlerIndex += 1;
-                if (handlerIndex >= numPlayers)
-                {
-                    handlerIndex = 0;
-                }
-            }
-            catch (InvalidOperationException)
-            {
-                Console.Error.WriteLine("Client disconnected");
-                looping = false;
-            }
-        }
-
         IList<int> terrCounts = [];
         for (int i = 0; i < Players.Count; i++)
         {
@@ -119,9 +80,6 @@ public class Game
         }
 
         winner ??= Players[terrCounts.IndexOf(terrCounts.Max())];
-
-        Console.WriteLine("The game has been decided!");
-        Console.WriteLine($"The winner is {winner.Name}!");
     }
 
     public void Attack(Territory attackTerr, Territory defendTerr,
@@ -226,11 +184,11 @@ public class Game
         if (defendTerr.NumArmies == 0)
         {
             PlaceArmyWinner(attackPlayer, defendTerr, attackTerr.NumArmies - 1);
-            Console.WriteLine($"{attackPlayer.Name} has won the territory! Your armies now occupy it.");
+            Console.WriteLine($"The attacking player has won the territory! Your armies now occupy it.");
         }
         else if (attackTerr.NumArmies == 1)
         {
-            Console.WriteLine($"{defendPlayer.Name} has retained the territory!");
+            Console.WriteLine($"The defending player has retained the territory!");
         }
     }
 

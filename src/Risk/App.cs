@@ -32,7 +32,13 @@ public class App
 
         var clients = await Connect(listener, numPlayers);
 
-        Game game = new Game(clients);
+        IList<IPlayer> players = [];
+        foreach (TcpClient client in clients)
+        {
+            players.Add(new Player(client));
+        }
+
+        Game game = new Game(players);
         Thread gameThread = new Thread(new ThreadStart(game.Run));
         gameThread.Start();
     }
