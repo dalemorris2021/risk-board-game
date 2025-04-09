@@ -56,3 +56,7 @@ The following is a list of test cases that the project currently runs. For a mor
 * Game can run with 6 bots
 * InputHandler returns expected string
 * InputHandler throws exception at end of file
+
+## Adding Bots
+
+To add a bot to the project, clone the project and add a dotnet source file (C#, F#, or VisualBasic) with a public class that implements the IPlayer src.Risk.IPlayer interface to the src/Risk directory. Next, modify the CreatePlayers method in the App.cs file to be able to create players of the bot class that you added. Then compile the project like normal.
